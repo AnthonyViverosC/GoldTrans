@@ -1,0 +1,24 @@
+# Entorno de desarrollo de la app.
+# Supabase local se levanta aparte con `npx supabase start` (usa su propio Docker).
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    env_file: .env
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  web:
+    build:
+      context: .
+      target: web
+      args:
+        EXPO_PUBLIC_SUPABASE_URL: ${EXPO_PUBLIC_SUPABASE_URL}
+        EXPO_PUBLIC_SUPABASE_ANON_KEY: ${EXPO_PUBLIC_SUPABASE_ANON_KEY}
+    ports:
+      - "8080:80"
+    profiles: ["web"]

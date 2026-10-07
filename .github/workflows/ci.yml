@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Lint · Typecheck · Tests · Bundle
+    runs-on: ubuntu-latest
+    env:
+      # Valores ficticios: el CI no se conecta a Supabase, solo valida que el bundle compile.
+      EXPO_PUBLIC_SUPABASE_URL: https://ci.supabase.co
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm run test:ci
+
+      - name: Bundle Android + iOS
+        run: npx expo export --platform android --platform ios --output-dir dist
+
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    needs: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: web
+          push: false
+          build-args: |
+            EXPO_PUBLIC_SUPABASE_URL=https://ci.supabase.co
+            EXPO_PUBLIC_SUPABASE_ANON_KEY=ci-anon-key
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
