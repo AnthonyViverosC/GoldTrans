@@ -1,0 +1,14 @@
+node_modules
+.expo
+dist
+web-build
+example
+android
+ios
+coverage
+.git
+.env
+.env.*
+!.env.example
+supabase/.temp
+supabase/.branches

@@ -41,3 +41,11 @@ example
 # generated native folders
 /ios
 /android
+
+# env (las claves reales nunca se suben)
+.env
+.env.*
+!.env.example
+
+# coverage
+coverage/
