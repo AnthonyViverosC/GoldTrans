@@ -47,7 +47,8 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:ci": "jest --ci --passWithNoTests"
+    "test:ci": "jest --ci --passWithNoTests",
+    "test:db": "supabase test db"
   },
   "private": true,
   "jest": {

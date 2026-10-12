@@ -29,6 +29,8 @@ export const supabase = createClient<Database>(
       autoRefreshToken: true,
       persistSession: !isServer,
       detectSessionInUrl: false,
+      // PKCE: el enlace de confirmación de correo vuelve con ?code= en lugar de tokens en la URL.
+      flowType: 'pkce',
     },
   },
 );
