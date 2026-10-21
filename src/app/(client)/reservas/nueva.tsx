@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
@@ -160,11 +161,9 @@ export default function NuevaReserva() {
               onChangeText={(t) => cambiar(i, 'numeroDocumento', t)}
               error={ev.numeroDocumento}
             />
-            <CampoTexto
+            <CampoFecha
               etiqueta="Fecha de nacimiento"
-              placeholder="AAAA-MM-DD"
-              keyboardType="numbers-and-punctuation"
-              maxLength={10}
+              maximo="hoy"
               value={v.fechaNacimiento}
               onChangeText={(t) => cambiar(i, 'fechaNacimiento', t)}
               error={ev.fechaNacimiento}

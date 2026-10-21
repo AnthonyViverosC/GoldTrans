@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { ProcesosLicitacion } from '@/components/procesos-licitacion';
 import { RepositorioDocumentos } from '@/components/repositorio-documentos';
-import { SelectorOpciones } from '@/components/selector-opciones';
+import { Segmentos } from '@/components/segmentos';
 
 type Vista = 'documentos' | 'licitaciones';
 
@@ -15,7 +15,7 @@ const VISTAS: { valor: Vista; texto: string }[] = [
 // Van en una sola pestaña para que la barra del admin quepa en un teléfono.
 export default function Portal() {
   const [vista, setVista] = useState<Vista>('documentos');
-  const selector = <SelectorOpciones opciones={VISTAS} valor={vista} onCambio={setVista} />;
+  const selector = <Segmentos opciones={VISTAS} valor={vista} onCambio={setVista} />;
   return vista === 'documentos' ? (
     <RepositorioDocumentos encabezado={selector} />
   ) : (

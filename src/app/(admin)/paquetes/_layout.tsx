@@ -1,16 +1,16 @@
 import { Stack } from 'expo-router';
 
+import { Logo } from '@/components/logo';
 import { MenuCuenta } from '@/components/menu-cuenta';
-import { Colors } from '@/constants/theme';
+import { opcionesEncabezado } from '@/components/navegacion';
 
 export default function PaquetesLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerTintColor: Colors.primaryDark,
-        contentStyle: { backgroundColor: Colors.background },
-      }}>
-      <Stack.Screen name="index" options={{ title: 'Paquetes', headerRight: () => <MenuCuenta /> }} />
+    <Stack screenOptions={opcionesEncabezado}>
+      <Stack.Screen
+        name="index"
+        options={{ title: 'Paquetes', headerLeft: () => <Logo tamano={30} />, headerRight: () => <MenuCuenta /> }}
+      />
       <Stack.Screen name="[id]" options={{ title: 'Paquete' }} />
     </Stack>
   );

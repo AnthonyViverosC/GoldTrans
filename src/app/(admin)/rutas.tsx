@@ -12,6 +12,7 @@ import {
 
 import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
@@ -83,7 +84,7 @@ export default function Rutas() {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>Aún no hay rutas registradas.</Text>
+            <EstadoVacio icono="map-outline" texto="Aún no hay rutas registradas." />
           )
         }
         renderItem={({ item: r }) => (

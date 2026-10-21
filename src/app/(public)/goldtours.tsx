@@ -1,12 +1,16 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
+import { Insignia } from '@/components/insignia';
 import { Mensaje } from '@/components/mensaje';
 import { SelectorOpciones } from '@/components/selector-opciones';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sombra, Spacing } from '@/constants/theme';
+import { fechaCorta } from '@/lib/calendario';
 import { formatearPesos, hoyEnColombia } from '@/lib/cotizador';
 import {
   FILTROS_INICIALES,
@@ -95,11 +99,14 @@ export default function Catalogo() {
         cargando ? (
           <ActivityIndicator color={Colors.primary} />
         ) : error ? null : (
-          <Text style={styles.vacio}>
-            {paquetes.length === 0
-              ? 'Pronto publicaremos nuestros paquetes turísticos.'
-              : 'Ningún paquete coincide con los filtros.'}
-          </Text>
+          <EstadoVacio
+            icono={paquetes.length === 0 ? 'earth-outline' : 'search-outline'}
+            texto={
+              paquetes.length === 0
+                ? 'Pronto publicaremos nuestros paquetes turísticos.'
+                : 'Ningún paquete coincide con los filtros.'
+            }
+          />
         )
       }
       renderItem={({ item: p }) => {
@@ -114,19 +121,32 @@ export default function Catalogo() {
             {foto ? <Image source={foto} style={styles.foto} contentFit="cover" transition={150} /> : null}
             <View style={styles.cuerpo}>
               <Text style={styles.nombre}>{p.nombre}</Text>
-              <Text style={styles.detalle}>
-                {p.destino} · {duracionTexto(p)}
-              </Text>
-              <Text style={styles.precio}>
-                {formatearPesos(p.precio_por_persona)} <Text style={styles.porPersona}>por persona</Text>
-              </Text>
-              <Text style={[styles.salida, !salida && styles.sinSalida]}>
-                {salida
-                  ? `Próxima salida ${salida.fecha_salida} · ${salida.cupos_disponibles} ${
-                      salida.cupos_disponibles === 1 ? 'cupo' : 'cupos'
-                    }${estadoFecha(salida, hoy) === 'ultimos' ? ' ¡últimos!' : ''}`
-                  : 'Sin salidas disponibles por ahora'}
-              </Text>
+              <View style={styles.dato}>
+                <Ionicons name="location-outline" size={15} color={Colors.primary} />
+                <Text style={styles.detalle}>
+                  {p.destino} · {duracionTexto(p)}
+                </Text>
+              </View>
+              <View style={styles.pie}>
+                <View>
+                  <Text style={styles.porPersona}>Por persona</Text>
+                  <Text style={styles.precio}>{formatearPesos(p.precio_por_persona)}</Text>
+                </View>
+                {salida ? (
+                  <Insignia
+                    texto={`${salida.cupos_disponibles} ${salida.cupos_disponibles === 1 ? 'cupo' : 'cupos'}${
+                      estadoFecha(salida, hoy) === 'ultimos' ? ' · ¡últimos!' : ''
+                    }`}
+                    tono={estadoFecha(salida, hoy) === 'ultimos' ? 'advertencia' : 'exito'}
+                  />
+                ) : null}
+              </View>
+              <View style={styles.dato}>
+                <Ionicons name="calendar-outline" size={15} color={Colors.muted} />
+                <Text style={styles.detalle}>
+                  {salida ? `Próxima salida: ${fechaCorta(salida.fecha_salida)}` : 'Sin salidas disponibles por ahora'}
+                </Text>
+              </View>
             </View>
           </Pressable>
         );
@@ -138,23 +158,21 @@ export default function Catalogo() {
 const styles = StyleSheet.create({
   lista: { padding: Spacing.md, gap: Spacing.md },
   ancho: { width: '100%', maxWidth: 560, alignSelf: 'center' },
-  titulo: { fontSize: 26, fontWeight: '700', color: Colors.primaryDark },
+  titulo: { fontSize: 26, fontWeight: '800', color: Colors.text },
   subtitulo: { fontSize: 15, color: Colors.muted, marginTop: Spacing.xs, marginBottom: Spacing.lg },
-  vacio: { textAlign: 'center', color: Colors.muted, marginTop: Spacing.lg, fontSize: 15 },
   tarjeta: {
-    borderRadius: Radius,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderRadius: Radius + 4,
     backgroundColor: Colors.background,
     overflow: 'hidden',
+    ...Sombra,
   },
-  presionada: { opacity: 0.85 },
+  presionada: { opacity: 0.9, transform: [{ scale: 0.99 }] },
   foto: { width: '100%', aspectRatio: 16 / 9, backgroundColor: Colors.surface },
-  cuerpo: { padding: Spacing.md },
-  nombre: { fontSize: 18, fontWeight: '700', color: Colors.text },
-  detalle: { fontSize: 14, color: Colors.muted, marginTop: 2 },
-  precio: { fontSize: 18, fontWeight: '700', color: Colors.primaryDark, marginTop: Spacing.sm },
-  porPersona: { fontSize: 13, fontWeight: '400', color: Colors.muted },
-  salida: { fontSize: 13, color: Colors.success, marginTop: Spacing.xs, fontWeight: '600' },
-  sinSalida: { color: Colors.muted, fontWeight: '400' },
+  cuerpo: { padding: Spacing.md, gap: Spacing.xs },
+  nombre: { fontSize: 18, fontWeight: '800', color: Colors.text },
+  dato: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  detalle: { fontSize: 14, color: Colors.muted },
+  pie: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginVertical: Spacing.xs },
+  precio: { fontSize: 20, fontWeight: '800', color: Colors.primary },
+  porPersona: { fontSize: 12, color: Colors.muted },
 });

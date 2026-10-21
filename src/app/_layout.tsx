@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { Colors } from '@/constants/theme';
+import { opcionesEncabezado } from '@/components/navegacion';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 
 export default function RootLayout() {
@@ -20,12 +20,7 @@ function RootNavigator() {
   const { session, rol } = useAuth();
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        headerTintColor: Colors.primaryDark,
-        contentStyle: { backgroundColor: Colors.background },
-      }}>
+    <Stack screenOptions={{ ...opcionesEncabezado, headerShown: false }}>
       <Stack.Screen name="index" />
 
       {/* Visitante */}

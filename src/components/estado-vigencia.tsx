@@ -1,30 +1,28 @@
-import { StyleSheet, Text } from 'react-native';
-
-import { Colors } from '@/constants/theme';
+import { Insignia, colorTono, type Tono } from '@/components/insignia';
 import { ETIQUETA_ITEM, ETIQUETA_VIGENCIA, type EstadoItem, type EstadoVigencia } from '@/lib/licitaciones';
 
-export const COLOR_VIGENCIA: Record<EstadoVigencia, string> = {
-  vigente: Colors.success,
-  por_vencer: Colors.primaryDark,
-  vencido: Colors.danger,
-  sin_vigencia: Colors.muted,
+const TONO_VIGENCIA: Record<EstadoVigencia, Tono> = {
+  vigente: 'exito',
+  por_vencer: 'advertencia',
+  vencido: 'peligro',
+  sin_vigencia: 'neutro',
 };
 
-const COLOR_ITEM: Record<EstadoItem, string> = {
-  cumple: Colors.success,
-  vence_antes_cierre: Colors.primaryDark,
-  vencido: Colors.danger,
-  pendiente: Colors.muted,
+export const COLOR_VIGENCIA = Object.fromEntries(
+  Object.entries(TONO_VIGENCIA).map(([e, t]) => [e, colorTono(t)]),
+) as Record<EstadoVigencia, string>;
+
+const TONO_ITEM: Record<EstadoItem, Tono> = {
+  cumple: 'exito',
+  vence_antes_cierre: 'advertencia',
+  vencido: 'peligro',
+  pendiente: 'neutro',
 };
 
 export function EstadoVigenciaTexto({ estado }: { estado: EstadoVigencia }) {
-  return <Text style={[styles.estado, { color: COLOR_VIGENCIA[estado] }]}>{ETIQUETA_VIGENCIA[estado]}</Text>;
+  return <Insignia texto={ETIQUETA_VIGENCIA[estado]} tono={TONO_VIGENCIA[estado]} />;
 }
 
 export function EstadoItemTexto({ estado }: { estado: EstadoItem }) {
-  return <Text style={[styles.estado, { color: COLOR_ITEM[estado] }]}>{ETIQUETA_ITEM[estado]}</Text>;
+  return <Insignia texto={ETIQUETA_ITEM[estado]} tono={TONO_ITEM[estado]} />;
 }
-
-const styles = StyleSheet.create({
-  estado: { fontSize: 13, fontWeight: '700' },
-});
