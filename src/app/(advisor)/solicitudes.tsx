@@ -1,15 +1,33 @@
 import { Link } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
 
+import { BandejaSolicitudes } from '@/components/bandeja-solicitudes';
 import { Boton } from '@/components/boton';
-import { InicioRol } from '@/components/inicio-rol';
+import { Spacing } from '@/constants/theme';
 
-// Inicio del rol Asesor. La bandeja de solicitudes llega con el Sprint 3 (HU-17).
+// Inicio del rol Asesor · HU-17 bandeja de solicitudes.
 export default function Solicitudes() {
   return (
-    <InicioRol vacio="No hay solicitudes pendientes.">
-      <Link href="/cotizador" asChild>
-        <Boton titulo="Abrir cotizador" variante="secundario" />
-      </Link>
-    </InicioRol>
+    <BandejaSolicitudes
+      encabezado={
+        <View style={styles.atajos}>
+          <View style={styles.boton}>
+            <Link href="/cotizador" asChild>
+              <Boton titulo="Cotizador" variante="secundario" />
+            </Link>
+          </View>
+          <View style={styles.boton}>
+            <Link href="/goldtours" asChild>
+              <Boton titulo="Goldtours" variante="secundario" />
+            </Link>
+          </View>
+        </View>
+      }
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  atajos: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
+  boton: { flex: 1 },
+});

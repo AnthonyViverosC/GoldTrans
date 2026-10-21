@@ -55,6 +55,47 @@ jobs:
 
       - run: supabase test db
 
+  # RNF-07 · Los tres módulos de punta a punta: Auth, API REST + RLS, Storage y Edge Functions locales.
+  integracion:
+    name: Integración de punta a punta (RNF-07)
+    runs-on: ubuntu-latest
+    needs: database
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: supabase start
+
+      - name: Edge Functions locales
+        run: |
+          echo "CRON_SECRET=ci-cron-secret" > supabase/functions/.env
+          supabase functions serve --env-file supabase/functions/.env > functions.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -s -o /dev/null -X OPTIONS http://127.0.0.1:54321/functions/v1/calcular-tarifa && break
+            sleep 2
+          done
+
+      - name: Prueba de integración
+        run: |
+          eval "$(supabase status -o env)"
+          export EXPO_PUBLIC_SUPABASE_URL="$API_URL" EXPO_PUBLIC_SUPABASE_ANON_KEY="$ANON_KEY"
+          export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY" CRON_SECRET=ci-cron-secret REGION=
+          node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/integracion.mjs
+
+      - name: Registro de las Edge Functions
+        if: failure()
+        run: cat functions.log
+
   docker:
     name: Docker build
     runs-on: ubuntu-latest

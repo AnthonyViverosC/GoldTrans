@@ -7,8 +7,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { ETIQUETA_ROL } from '@/lib/roles';
 
 type Props = {
-  /** Texto para la sección aún vacía (los módulos llegan en próximos sprints). */
-  vacio: string;
+  /** Texto para la sección aún vacía; se omite cuando hay contenido que mostrar. */
+  vacio?: string;
   children?: ReactNode;
 };
 
@@ -21,9 +21,13 @@ export function InicioRol({ vacio, children }: Props) {
     <PantallaFormulario margenSuperior={false}>
       <Text style={styles.saludo}>Hola, {nombre}</Text>
       <Text style={styles.rol}>{ETIQUETA_ROL[rol]}</Text>
-      <View style={styles.vacio}>
-        <Text style={styles.vacioTexto}>{vacio}</Text>
-      </View>
+      {vacio ? (
+        <View style={styles.vacio}>
+          <Text style={styles.vacioTexto}>{vacio}</Text>
+        </View>
+      ) : (
+        <View style={styles.separador} />
+      )}
       <View style={styles.acciones}>{children}</View>
     </PantallaFormulario>
   );
@@ -39,5 +43,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
   },
   vacioTexto: { color: Colors.muted, textAlign: 'center', fontSize: 15 },
+  separador: { height: Spacing.lg },
   acciones: { gap: Spacing.md },
 });

@@ -79,6 +79,10 @@ export default function Login() {
       <Link href="/cotizador" asChild>
         <Boton titulo="Cotizar sin registrarme" variante="secundario" />
       </Link>
+      <View style={styles.espacio} />
+      <Link href="/goldtours" asChild>
+        <Boton titulo="Ver paquetes Goldtours" variante="secundario" />
+      </Link>
 
       <Text style={[styles.estado, { color: health.status === 'done' && !health.ok ? Colors.danger : Colors.muted }]}>
         {health.status === 'loading'
@@ -94,6 +98,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   enlaces: { marginTop: Spacing.lg, gap: Spacing.md, alignItems: 'center' },
   enlace: { color: Colors.primaryDark, fontSize: 15, fontWeight: '600' },
+  espacio: { height: Spacing.md },
   separador: { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.lg },
   estado: { marginTop: Spacing.xl, fontSize: 12, textAlign: 'center' },
 });

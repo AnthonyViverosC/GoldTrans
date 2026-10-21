@@ -140,6 +140,33 @@ export function validarEntero(
   if (!/^\d+$/.test(valor.trim()) || n < min || n > max) return mensaje;
 }
 
+// ─── Rutas y tarifas (HU-09 · HU-10) ──────────────────────────
+
+/** "$ 1.250.000" → "1250000" (los valores en pesos se escriben con puntos de miles). */
+export function normalizarPesos(valor: string): string {
+  return valor.replace(/[$\s.]/g, '');
+}
+
+export function validarPesos(valor: string, mensaje = 'Valor en pesos no válido'): string | undefined {
+  return validarEntero(normalizarPesos(valor), 0, 100_000_000, mensaje);
+}
+
+/** "132,5" o "132.5" → 132.5 (NaN si no es un número). */
+export function aDecimal(valor: string): number {
+  const limpio = valor.trim().replace(',', '.');
+  return /^\d+(\.\d+)?$/.test(limpio) ? Number(limpio) : NaN;
+}
+
+export function validarDecimal(
+  valor: string,
+  min: number,
+  max: number,
+  mensaje: string,
+): string | undefined {
+  const n = aDecimal(valor);
+  if (Number.isNaN(n) || n < min || n > max) return mensaje;
+}
+
 /** Fecha opcional AAAA-MM-DD. */
 export function validarFecha(valor: string): string | undefined {
   if (!valor.trim()) return undefined;

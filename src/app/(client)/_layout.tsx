@@ -1,17 +1,24 @@
-import { Stack } from 'expo-router';
+import { Tabs } from 'expo-router';
 
 import { MenuCuenta } from '@/components/menu-cuenta';
 import { Colors } from '@/constants/theme';
 
 export default function ClientLayout() {
   return (
-    <Stack
+    <Tabs
       screenOptions={{
         headerTintColor: Colors.primaryDark,
         headerRight: () => <MenuCuenta />,
-        contentStyle: { backgroundColor: Colors.background },
+        headerRightContainerStyle: { paddingRight: 16 },
+        tabBarActiveTintColor: Colors.primaryDark,
+        tabBarInactiveTintColor: Colors.muted,
+        tabBarIconStyle: { display: 'none' },
+        tabBarLabelStyle: { fontSize: 15, fontWeight: '600' },
+        sceneStyle: { backgroundColor: Colors.background },
       }}>
-      <Stack.Screen name="mis-cotizaciones" options={{ title: 'Mis cotizaciones' }} />
-    </Stack>
+      <Tabs.Screen name="mis-cotizaciones" options={{ title: 'Cotizaciones' }} />
+      <Tabs.Screen name="mis-solicitudes" options={{ title: 'Solicitudes' }} />
+      <Tabs.Screen name="reservas" options={{ title: 'Reservas', headerShown: false }} />
+    </Tabs>
   );
 }

@@ -10,6 +10,8 @@ export default function PublicLayout() {
         contentStyle: { backgroundColor: Colors.background },
       }}>
       <Stack.Screen name="cotizador" options={{ title: 'Cotizador' }} />
+      <Stack.Screen name="goldtours" options={{ title: 'Goldtours' }} />
+      <Stack.Screen name="paquete/[id]" options={{ title: 'Paquete' }} />
     </Stack>
   );
 }
