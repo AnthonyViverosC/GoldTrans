@@ -1,29 +1,24 @@
+import { Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { Colors } from '@/constants/theme';
-import { useSupabaseHealth } from '@/hooks/use-supabase-health';
+import { useAuth } from '@/hooks/use-auth';
+import { rutaInicio } from '@/lib/roles';
 
+/** Punto de entrada: espera a restaurar la sesión y envía a la pantalla de inicio del rol. */
 export default function Index() {
-  const health = useSupabaseHealth();
+  const { cargando, rol } = useAuth();
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>GOLDTRANS S.A.S.</Text>
-      <Text style={styles.subtitle}>Transporte terrestre especial</Text>
-
-      <View style={styles.status}>
-        {health.status === 'loading' ? (
-          <ActivityIndicator color={Colors.primary} />
-        ) : health.ok ? (
-          <Text style={[styles.statusText, { color: Colors.success }]}>Supabase conectado</Text>
-        ) : (
-          <Text style={[styles.statusText, { color: Colors.danger }]}>
-            Sin conexión a Supabase: {health.error}
-          </Text>
-        )}
+  if (cargando) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>GOLDTRANS S.A.S.</Text>
+        <ActivityIndicator style={styles.spinner} color={Colors.primary} />
       </View>
-    </View>
-  );
+    );
+  }
+
+  return <Redirect href={rutaInicio(rol)} />;
 }
 
 const styles = StyleSheet.create({
@@ -31,25 +26,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
     backgroundColor: Colors.background,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: Colors.primaryDark,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: Colors.muted,
-    marginTop: 4,
-  },
-  status: {
-    marginTop: 32,
-    minHeight: 24,
-  },
-  statusText: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
+  title: { fontSize: 28, fontWeight: '700', color: Colors.primaryDark },
+  spinner: { marginTop: 24 },
 });

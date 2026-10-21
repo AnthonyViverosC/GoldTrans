@@ -15,7 +15,7 @@ flowchart LR
     AUTH["Auth (JWT)"]
     DB[("PostgreSQL<br/>+ RLS por rol")]
     ST["Storage<br/>buckets privados"]
-    EF["Edge Functions<br/>calcular-tarifa<br/>liberar-cupos<br/>alertas-vencimiento"]
+    EF["Edge Functions<br/>calcular-tarifa<br/>liberar-cupos<br/>alertas-vencimiento<br/>descargar-paquete"]
     CRON["pg_cron"]
   end
 
