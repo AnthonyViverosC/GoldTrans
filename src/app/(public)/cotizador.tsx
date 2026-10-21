@@ -1,16 +1,18 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { AccionesCompartir } from '@/components/acciones-compartir';
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
 import { DesgloseCotizacion } from '@/components/desglose-cotizacion';
 import { Mensaje } from '@/components/mensaje';
 import { ModalSolicitud } from '@/components/modal-solicitud';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sombra, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { desdeRespuesta } from '@/lib/compartir';
 import {
@@ -165,17 +167,18 @@ export default function Cotizador() {
             valor={servicio}
             onCambio={cambiar(setServicio, 'fechaFin')}
           />
-          <CampoTexto
+          <CampoFecha
             etiqueta={servicio === 'disponibilidad' ? 'Primer día de servicio' : 'Fecha del servicio'}
-            placeholder="AAAA-MM-DD"
+            minimo="hoy"
             value={fechaInicio}
             onChangeText={cambiar(setFechaInicio, 'fechaInicio')}
             error={errores.fechaInicio}
           />
           {servicio !== 'ida' ? (
-            <CampoTexto
+            <CampoFecha
               etiqueta={servicio === 'disponibilidad' ? 'Último día de servicio' : 'Fecha de regreso (opcional)'}
-              placeholder="AAAA-MM-DD"
+              minimo={fechaInicio || 'hoy'}
+              opcional
               value={fechaFin}
               onChangeText={cambiar(setFechaFin, 'fechaFin')}
               error={errores.fechaFin}
@@ -192,7 +195,7 @@ export default function Cotizador() {
           />
 
           <Mensaje texto={error} />
-          <Boton titulo="Cotizar" onPress={calcular} cargando={cotizando} />
+          <Boton titulo="Calcular cotización" icono="calculator-outline" onPress={calcular} cargando={cotizando} />
 
           {resultado ? <Resultado cotizacion={resultado} rol={rol} /> : null}
         </>
@@ -208,19 +211,26 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
 
   return (
     <View style={styles.resultado} accessibilityLiveRegion="polite">
-      <Text style={styles.codigo}>Cotización {c.codigo}</Text>
-      <Text style={styles.ruta}>
-        {c.ruta.origen} → {c.ruta.destino}
-      </Text>
-      <Text style={styles.dato}>
-        {ETIQUETA_SERVICIO[c.tipo_servicio]} · {fechas} · {formatearDecimal(c.distancia_km)} km
-      </Text>
+      <View style={styles.cabecera}>
+        <Text style={styles.codigo}>Cotización {c.codigo}</Text>
+        <Text style={styles.ruta}>
+          {c.ruta.origen} → {c.ruta.destino}
+        </Text>
+        <Text style={styles.datoCabecera}>
+          {ETIQUETA_SERVICIO[c.tipo_servicio]} · {fechas} · {formatearDecimal(c.distancia_km)} km
+        </Text>
+      </View>
 
       <View style={styles.vehiculo}>
-        <Text style={styles.vehiculoTitulo}>Vehículo sugerido: {vehiculo}</Text>
-        <Text style={styles.dato}>
-          Hasta {c.vehiculo.capacidad} pasajeros · viajan {c.pasajeros}
-        </Text>
+        <View style={styles.vehiculoIcono}>
+          <Ionicons name="bus" size={24} color={Colors.primary} />
+        </View>
+        <View style={styles.vehiculoTexto}>
+          <Text style={styles.vehiculoTitulo}>Vehículo sugerido: {vehiculo}</Text>
+          <Text style={styles.dato}>
+            Hasta {c.vehiculo.capacidad} pasajeros · viajan {c.pasajeros}
+          </Text>
+        </View>
       </View>
 
       <DesgloseCotizacion lineas={c.desglose} valorTotal={c.valor_total} />
@@ -236,12 +246,12 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
         <>
           <Text style={styles.pie}>Crea una cuenta para guardar tus cotizaciones y solicitar el servicio.</Text>
           <Link href="/registro" asChild>
-            <Boton titulo="Crear cuenta" variante="secundario" />
+            <Boton titulo="Crear cuenta" variante="secundario" icono="person-add-outline" />
           </Link>
         </>
       ) : rol === 'cliente' ? (
         <>
-          <Boton titulo="Solicitar este servicio" onPress={() => setSolicitando(true)} />
+          <Boton titulo="Solicitar este servicio" variante="acento" icono="send-outline" onPress={() => setSolicitando(true)} />
           <Text style={styles.pie}>Quedó guardada en tu historial de cotizaciones.</Text>
           <ModalSolicitud
             cotizacion={
@@ -267,21 +277,44 @@ const styles = StyleSheet.create({
   resultado: {
     marginTop: Spacing.lg,
     padding: Spacing.md,
-    borderRadius: Radius,
-    borderWidth: 1,
-    borderColor: Colors.primary,
+    borderRadius: Radius + 4,
     backgroundColor: Colors.background,
     gap: Spacing.xs,
+    ...Sombra,
   },
-  codigo: { fontSize: 13, fontWeight: '600', color: Colors.primaryDark, letterSpacing: 0.5 },
-  ruta: { fontSize: 20, fontWeight: '700', color: Colors.text },
+  cabecera: {
+    margin: -Spacing.md,
+    marginBottom: Spacing.xs,
+    padding: Spacing.md,
+    borderTopLeftRadius: Radius + 4,
+    borderTopRightRadius: Radius + 4,
+    backgroundColor: Colors.primary,
+    borderBottomWidth: 4,
+    borderBottomColor: Colors.accent,
+    gap: 2,
+  },
+  codigo: { fontSize: 12, fontWeight: '700', color: Colors.accent, letterSpacing: 0.8, textTransform: 'uppercase' },
+  ruta: { fontSize: 21, fontWeight: '800', color: Colors.onPrimary },
+  datoCabecera: { fontSize: 14, color: '#C9D6F0' },
   dato: { fontSize: 14, color: Colors.muted },
   vehiculo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
     marginVertical: Spacing.sm,
     padding: Spacing.md,
     borderRadius: Radius,
     backgroundColor: Colors.surface,
   },
+  vehiculoIcono: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.background,
+  },
+  vehiculoTexto: { flex: 1 },
   vehiculoTitulo: { fontSize: 16, fontWeight: '700', color: Colors.text },
   pie: { fontSize: 13, color: Colors.muted, marginTop: Spacing.sm },
 });

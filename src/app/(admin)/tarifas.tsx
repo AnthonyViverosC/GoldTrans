@@ -11,7 +11,10 @@ import {
 } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
+import { Insignia, type Tono } from '@/components/insignia';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
@@ -33,10 +36,10 @@ import {
 import { sinErrores, type Errores } from '@/lib/validacion';
 import { ETIQUETA_TIPO, TIPOS_VEHICULO, type TipoVehiculo } from '@/lib/vehiculos';
 
-const COLOR_VIGENCIA: Record<EstadoVigencia, string> = {
-  vigente: Colors.success,
-  futura: Colors.primaryDark,
-  vencida: Colors.danger,
+const TONO_VIGENCIA: Record<EstadoVigencia, Tono> = {
+  vigente: 'exito',
+  futura: 'info',
+  vencida: 'neutro',
 };
 
 // HU-10 · Administrar tarifas por tipo de vehículo y vigencia.
@@ -92,7 +95,7 @@ export default function Tarifas() {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>Aún no hay tarifas registradas.</Text>
+            <EstadoVacio icono="pricetags-outline" texto="Aún no hay tarifas registradas." />
           )
         }
         renderItem={({ item: t }) => {
@@ -105,9 +108,7 @@ export default function Tarifas() {
               style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
               <View style={styles.filaTitulo}>
                 <Text style={styles.titulo}>{ETIQUETA_TIPO[t.tipo_vehiculo as TipoVehiculo]}</Text>
-                <Text style={[styles.estado, { color: COLOR_VIGENCIA[estado] }]}>
-                  {ETIQUETA_VIGENCIA[estado]}
-                </Text>
+                <Insignia texto={ETIQUETA_VIGENCIA[estado]} tono={TONO_VIGENCIA[estado]} />
               </View>
               <Text style={styles.detalle}>
                 Base {formatearPesos(t.tarifa_base)} · {formatearPesos(t.valor_km)}/km ·{' '}
@@ -229,16 +230,15 @@ function FormularioTarifaModal({
         error={errores.recargoFinSemana}
         ayuda="Se aplica a los días del servicio que caen en sábado o domingo"
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vigente desde"
-        placeholder="AAAA-MM-DD"
         value={datos.vigenciaDesde}
         onChangeText={(v) => cambiar('vigenciaDesde', v)}
         error={errores.vigenciaDesde}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vigente hasta (opcional)"
-        placeholder="AAAA-MM-DD"
+        opcional
         value={datos.vigenciaHasta}
         onChangeText={(v) => cambiar('vigenciaHasta', v)}
         error={errores.vigenciaHasta}
@@ -274,7 +274,6 @@ const styles = StyleSheet.create({
   presionada: { backgroundColor: Colors.surface },
   filaTitulo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   titulo: { fontSize: 16, fontWeight: '700', color: Colors.text },
-  estado: { fontSize: 13, fontWeight: '600' },
   detalle: { fontSize: 14, color: Colors.muted, marginTop: 2 },
   vacio: { textAlign: 'center', color: Colors.muted, marginTop: Spacing.lg },
   botones: { gap: Spacing.md },

@@ -1,7 +1,8 @@
 import { Redirect } from 'expo-router';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Logo } from '@/components/logo';
+import { Colors, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { rutaInicio } from '@/lib/roles';
 
@@ -12,6 +13,7 @@ export default function Index() {
   if (cargando) {
     return (
       <View style={styles.container}>
+        <Logo tamano={140} />
         <Text style={styles.title}>GOLDTRANS S.A.S.</Text>
         <ActivityIndicator style={styles.spinner} color={Colors.primary} />
       </View>
@@ -28,6 +30,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.background,
   },
-  title: { fontSize: 28, fontWeight: '700', color: Colors.primaryDark },
-  spinner: { marginTop: 24 },
+  title: { marginTop: Spacing.md, fontSize: 22, fontWeight: '800', color: Colors.primary, letterSpacing: 1 },
+  spinner: { marginTop: Spacing.lg },
 });

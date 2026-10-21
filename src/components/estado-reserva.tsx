@@ -1,6 +1,4 @@
-import { StyleSheet, Text } from 'react-native';
-
-import { Colors } from '@/constants/theme';
+import { Insignia, type Tono } from '@/components/insignia';
 import {
   ETIQUETA_ESTADO_ABONO,
   ETIQUETA_ESTADO_RESERVA,
@@ -8,31 +6,25 @@ import {
   type EstadoReserva,
 } from '@/lib/reservas';
 
-const COLOR_RESERVA: Record<EstadoReserva, string> = {
-  prerreserva: Colors.primaryDark,
-  confirmada: Colors.success,
-  pagada: Colors.success,
-  vencida: Colors.muted,
-  cancelada: Colors.danger,
+const TONO_RESERVA: Record<EstadoReserva, Tono> = {
+  prerreserva: 'advertencia',
+  confirmada: 'info',
+  pagada: 'exito',
+  vencida: 'neutro',
+  cancelada: 'peligro',
 };
 
-const COLOR_ABONO: Record<EstadoAbono, string> = {
-  pendiente: Colors.primaryDark,
-  aprobado: Colors.success,
-  rechazado: Colors.danger,
+const TONO_ABONO: Record<EstadoAbono, Tono> = {
+  pendiente: 'advertencia',
+  aprobado: 'exito',
+  rechazado: 'peligro',
 };
 
 export function EstadoReservaTexto({ estado }: { estado: EstadoReserva }) {
-  return <Text style={[styles.estado, { color: COLOR_RESERVA[estado] }]}>{ETIQUETA_ESTADO_RESERVA[estado]}</Text>;
+  return <Insignia texto={ETIQUETA_ESTADO_RESERVA[estado]} tono={TONO_RESERVA[estado]} />;
 }
 
 export function EstadoAbonoTexto({ estado }: { estado: string }) {
   const e = estado as EstadoAbono;
-  return (
-    <Text style={[styles.estado, { color: COLOR_ABONO[e] ?? Colors.muted }]}>{ETIQUETA_ESTADO_ABONO[e] ?? estado}</Text>
-  );
+  return <Insignia texto={ETIQUETA_ESTADO_ABONO[e] ?? estado} tono={TONO_ABONO[e] ?? 'neutro'} />;
 }
-
-const styles = StyleSheet.create({
-  estado: { fontSize: 13, fontWeight: '700' },
-});

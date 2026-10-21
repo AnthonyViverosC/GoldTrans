@@ -1,6 +1,7 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 
 type Props<T extends string> = {
   etiqueta?: string;
@@ -10,7 +11,7 @@ type Props<T extends string> = {
   deshabilitado?: boolean;
 };
 
-/** Grupo de botones de selección única (tipo de persona, rol, estado...). */
+/** Grupo de chips de selección única (tipo de persona, rol, estado...). */
 export function SelectorOpciones<T extends string>({
   etiqueta,
   opciones,
@@ -31,7 +32,13 @@ export function SelectorOpciones<T extends string>({
               accessibilityState={{ checked: activo, disabled: deshabilitado }}
               disabled={deshabilitado}
               onPress={() => onCambio(o.valor)}
-              style={[styles.opcion, activo && styles.opcionActiva, deshabilitado && styles.inactivo]}>
+              style={({ pressed }) => [
+                styles.opcion,
+                activo && styles.opcionActiva,
+                pressed && !activo && styles.presionada,
+                deshabilitado && styles.inactivo,
+              ]}>
+              {activo ? <Ionicons name="checkmark" size={16} color={Colors.onPrimary} /> : null}
               <Text style={[styles.texto, activo && styles.textoActivo]}>{o.texto}</Text>
             </Pressable>
           );
@@ -43,18 +50,23 @@ export function SelectorOpciones<T extends string>({
 
 const styles = StyleSheet.create({
   contenedor: { marginBottom: Spacing.md },
-  etiqueta: { fontSize: 14, fontWeight: '600', color: Colors.text, marginBottom: Spacing.xs },
+  etiqueta: { fontSize: 14, fontWeight: '600', color: Colors.text, marginBottom: 6 },
   fila: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   opcion: {
-    paddingVertical: 10,
+    minHeight: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 8,
     paddingHorizontal: 14,
-    borderRadius: Radius,
-    borderWidth: 1,
+    borderRadius: 999,
+    borderWidth: 1.5,
     borderColor: Colors.border,
     backgroundColor: Colors.background,
   },
-  opcionActiva: { borderColor: Colors.primaryDark, backgroundColor: Colors.surface },
-  texto: { color: Colors.muted, fontSize: 14 },
-  textoActivo: { color: Colors.primaryDark, fontWeight: '700' },
+  opcionActiva: { borderColor: Colors.primary, backgroundColor: Colors.primary },
+  presionada: { backgroundColor: Colors.surface },
+  texto: { color: Colors.text, fontSize: 14, fontWeight: '500' },
+  textoActivo: { color: Colors.onPrimary, fontWeight: '700' },
   inactivo: { opacity: 0.5 },
 });

@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -12,9 +13,11 @@ import {
 } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { Insignia, type Tono } from '@/components/insignia';
 import { Mensaje } from '@/components/mensaje';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sombra, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
+import { fechaCorta } from '@/lib/calendario';
 import { formatearPesos, hoyEnColombia } from '@/lib/cotizador';
 import {
   ETIQUETA_ESTADO_FECHA,
@@ -27,12 +30,12 @@ import {
   type PaqueteCompleto,
 } from '@/lib/paquetes';
 
-const COLOR_FECHA: Record<EstadoFecha, string> = {
-  disponible: Colors.success,
-  ultimos: Colors.primaryDark,
-  agotada: Colors.danger,
-  cerrada: Colors.muted,
-  pasada: Colors.muted,
+const TONO_FECHA: Record<EstadoFecha, Tono> = {
+  disponible: 'exito',
+  ultimos: 'advertencia',
+  agotada: 'peligro',
+  cerrada: 'neutro',
+  pasada: 'neutro',
 };
 
 // HU-19 · Ficha detallada del paquete: fotos, itinerario, qué incluye y fechas con cupos.
@@ -94,15 +97,17 @@ export default function FichaPaquete() {
 
       <View style={styles.ancho}>
         <Text style={styles.nombre}>{p.nombre}</Text>
-        <Text style={styles.detalle}>
-          {p.destino} · {duracionTexto(p)}
-        </Text>
-        <Text style={styles.precio}>
-          {formatearPesos(p.precio_por_persona)} <Text style={styles.porPersona}>por persona</Text>
-        </Text>
+        <View style={styles.datos}>
+          <Dato icono="location-outline" texto={p.destino} />
+          <Dato icono="time-outline" texto={duracionTexto(p)} />
+        </View>
+        <View style={styles.cajaPrecio}>
+          <Text style={styles.desde}>Precio por persona</Text>
+          <Text style={styles.precio}>{formatearPesos(p.precio_por_persona)}</Text>
+        </View>
         {p.descripcion ? <Text style={styles.texto}>{p.descripcion}</Text> : null}
 
-        <Text style={styles.seccion}>Fechas de salida</Text>
+        <Text style={styles.seccion}>Elige tu fecha de salida</Text>
         {fechas.length === 0 ? (
           <Text style={styles.texto}>No hay salidas programadas por ahora.</Text>
         ) : (
@@ -118,9 +123,15 @@ export default function FichaPaquete() {
                 disabled={!disponible}
                 onPress={() => setFechaElegida(f.id)}
                 style={[styles.fecha, elegida && styles.fechaElegida, !disponible && styles.fechaInactiva]}>
-                <View>
+                <Ionicons
+                  name={elegida ? 'radio-button-on' : 'radio-button-off'}
+                  size={22}
+                  color={disponible ? Colors.primary : Colors.border}
+                />
+                <View style={styles.fechaCuerpo}>
                   <Text style={styles.fechaTexto}>
-                    {f.fecha_salida} → {f.fecha_regreso}
+                    {fechaCorta(f.fecha_salida)}
+                    {f.fecha_regreso !== f.fecha_salida ? ` → ${fechaCorta(f.fecha_regreso)}` : ''}
                   </Text>
                   <Text style={styles.detalle}>
                     {disponible
@@ -128,7 +139,7 @@ export default function FichaPaquete() {
                       : `${f.cupos_totales} cupos`}
                   </Text>
                 </View>
-                <Text style={[styles.estado, { color: COLOR_FECHA[estado] }]}>{ETIQUETA_ESTADO_FECHA[estado]}</Text>
+                <Insignia texto={ETIQUETA_ESTADO_FECHA[estado]} tono={TONO_FECHA[estado]} />
               </Pressable>
             );
           })
@@ -137,13 +148,15 @@ export default function FichaPaquete() {
         {fechaElegida && rol === 'cliente' ? (
           <Boton
             titulo="Reservar esta fecha"
+            variante="acento"
+            icono="ticket-outline"
             onPress={() => router.push({ pathname: '/reservas/nueva', params: { paquete: p.id, fecha: fechaElegida } })}
           />
         ) : null}
         {fechaElegida && rol === 'visitante' ? (
           <>
             <Mensaje tipo="exito" texto="Inicia sesión o crea tu cuenta de cliente para reservar." />
-            <Boton titulo="Iniciar sesión" onPress={() => router.push('/login')} />
+            <Boton titulo="Iniciar sesión" icono="log-in-outline" onPress={() => router.push('/login')} />
           </>
         ) : null}
         {fechaElegida && (rol === 'asesor' || rol === 'admin') ? (
@@ -169,9 +182,10 @@ export default function FichaPaquete() {
           <>
             <Text style={styles.seccion}>Incluye</Text>
             {p.incluye.map((i) => (
-              <Text key={i} style={styles.item}>
-                ✓ {i}
-              </Text>
+              <View key={i} style={styles.item}>
+                <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+                <Text style={styles.itemTexto}>{i}</Text>
+              </View>
             ))}
           </>
         ) : null}
@@ -179,14 +193,24 @@ export default function FichaPaquete() {
           <>
             <Text style={styles.seccion}>No incluye</Text>
             {p.no_incluye.map((i) => (
-              <Text key={i} style={[styles.item, styles.noIncluye]}>
-                ✕ {i}
-              </Text>
+              <View key={i} style={styles.item}>
+                <Ionicons name="close-circle" size={20} color={Colors.muted} />
+                <Text style={[styles.itemTexto, styles.noIncluye]}>{i}</Text>
+              </View>
             ))}
           </>
         ) : null}
       </View>
     </ScrollView>
+  );
+}
+
+function Dato({ icono, texto }: { icono: 'location-outline' | 'time-outline'; texto: string }) {
+  return (
+    <View style={styles.dato}>
+      <Ionicons name={icono} size={16} color={Colors.primary} />
+      <Text style={styles.detalle}>{texto}</Text>
+    </View>
   );
 }
 
@@ -196,15 +220,25 @@ const styles = StyleSheet.create({
   galeria: { flexGrow: 0, backgroundColor: Colors.surface },
   ayudaGaleria: { fontSize: 12, color: Colors.muted, marginTop: Spacing.xs },
   ancho: { width: '100%', maxWidth: 560, padding: Spacing.md },
-  nombre: { fontSize: 24, fontWeight: '700', color: Colors.text },
-  detalle: { fontSize: 14, color: Colors.muted, marginTop: 2 },
-  precio: { fontSize: 22, fontWeight: '700', color: Colors.primaryDark, marginTop: Spacing.sm },
-  porPersona: { fontSize: 14, fontWeight: '400', color: Colors.muted },
+  nombre: { fontSize: 24, fontWeight: '800', color: Colors.text },
+  datos: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.md, marginTop: Spacing.xs },
+  dato: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  detalle: { fontSize: 14, color: Colors.muted },
+  cajaPrecio: {
+    marginTop: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: Radius,
+    backgroundColor: Colors.accentBg,
+    borderLeftWidth: 4,
+    borderLeftColor: Colors.accent,
+  },
+  desde: { fontSize: 13, color: Colors.accentDark, fontWeight: '600' },
+  precio: { fontSize: 26, fontWeight: '800', color: Colors.text, marginTop: 2 },
   texto: { fontSize: 15, color: Colors.text, lineHeight: 22, marginTop: Spacing.sm },
   seccion: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.primaryDark,
+    color: Colors.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginTop: Spacing.lg,
@@ -212,22 +246,35 @@ const styles = StyleSheet.create({
   },
   fecha: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: Spacing.md,
     padding: Spacing.md,
     marginBottom: Spacing.sm,
     borderRadius: Radius,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.border,
+    backgroundColor: Colors.background,
   },
-  fechaElegida: { borderColor: Colors.primaryDark, backgroundColor: Colors.surface },
+  fechaElegida: { borderColor: Colors.primary, backgroundColor: Colors.surface, ...Sombra },
+  fechaCuerpo: { flex: 1 },
   fechaInactiva: { opacity: 0.55 },
   fechaTexto: { fontSize: 15, fontWeight: '600', color: Colors.text },
-  estado: { fontSize: 13, fontWeight: '700' },
   dia: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.md },
-  diaNumero: { width: 52, fontSize: 13, fontWeight: '700', color: Colors.primaryDark, marginTop: 2 },
+  diaNumero: {
+    alignSelf: 'flex-start',
+    width: 56,
+    paddingVertical: 4,
+    borderRadius: 999,
+    overflow: 'hidden',
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '800',
+    color: Colors.onPrimary,
+    backgroundColor: Colors.primary,
+  },
   diaCuerpo: { flex: 1 },
   diaTitulo: { fontSize: 15, fontWeight: '700', color: Colors.text },
-  item: { fontSize: 15, color: Colors.text, marginBottom: Spacing.xs },
+  item: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm, marginBottom: Spacing.sm },
+  itemTexto: { flex: 1, fontSize: 15, color: Colors.text, lineHeight: 21 },
   noIncluye: { color: Colors.muted },
 });

@@ -14,6 +14,7 @@ import {
 import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
 import { EstadoAbonoTexto, EstadoReservaTexto } from '@/components/estado-reserva';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { ResumenPagosVista } from '@/components/resumen-pagos';
@@ -108,9 +109,10 @@ export function BandejaReservas({ encabezado }: { encabezado?: ReactNode }) {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>
-              {filtro === 'por_verificar' ? 'No hay abonos por verificar.' : 'No hay reservas en este estado.'}
-            </Text>
+            <EstadoVacio
+              icono="wallet-outline"
+              texto={filtro === 'por_verificar' ? 'No hay abonos por verificar.' : 'No hay reservas en este estado.'}
+            />
           )
         }
         renderItem={({ item: r }) => {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { formatearPesos, hoyEnColombia } from '@/lib/cotizador';
@@ -69,7 +70,7 @@ export default function Paquetes() {
         cargando ? (
           <ActivityIndicator color={Colors.primary} />
         ) : (
-          <Text style={styles.vacio}>Aún no hay paquetes turísticos.</Text>
+          <EstadoVacio icono="earth-outline" texto="Aún no hay paquetes turísticos." />
         )
       }
       renderItem={({ item: p }) => {

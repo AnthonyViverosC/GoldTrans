@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
 import { EstadoAbonoTexto, EstadoReservaTexto } from '@/components/estado-reserva';
 import { Mensaje } from '@/components/mensaje';
@@ -228,11 +229,9 @@ function FormularioAbonoCliente({
         error={errores.valor}
         ayuda={`Saldo por pagar: ${formatearPesos(resumen.porPagar)}`}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Fecha de la transferencia"
-        placeholder="AAAA-MM-DD"
-        keyboardType="numbers-and-punctuation"
-        maxLength={10}
+        maximo="hoy"
         value={datos.fechaTransferencia}
         onChangeText={(v) => cambiar('fechaTransferencia', v)}
         error={errores.fechaTransferencia}

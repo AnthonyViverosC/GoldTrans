@@ -2,11 +2,13 @@ import { Link } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { AccesoRapido } from '@/components/acceso-rapido';
 import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
+import { Logo } from '@/components/logo';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Radius, Sombra, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { useSupabaseHealth } from '@/hooks/use-supabase-health';
 import { iniciarSesion } from '@/lib/auth';
@@ -39,66 +41,113 @@ export default function Login() {
     if (!resultado.ok) setError(resultado.error);
   }
 
+  const conectado = health.status === 'done' && health.ok;
+  const sinConexion = health.status === 'done' && !health.ok;
+
   return (
-    <PantallaFormulario titulo="GOLDTRANS S.A.S." subtitulo="Transporte terrestre especial">
-      <Mensaje texto={aviso ?? error} />
+    <PantallaFormulario
+      cabecera={
+        <View style={styles.marca}>
+          <Logo tamano={112} />
+          <Text style={styles.nombre}>
+            GOLD<Text style={styles.trans}>TRANS</Text> S.A.S.
+          </Text>
+          <Text style={styles.lema}>Transporte terrestre especial · La Hormiga, Putumayo</Text>
+        </View>
+      }>
+      {/* Lo que más busca un visitante va primero: cotizar o ver paquetes, sin cuenta. */}
+      <View style={styles.accesos}>
+        <Link href="/cotizador" asChild>
+          <AccesoRapido icono="calculator" titulo="Cotizar viaje" detalle="Sin registrarte" />
+        </Link>
+        <Link href="/goldtours" asChild>
+          <AccesoRapido icono="earth" titulo="Goldtours" detalle="Paquetes turísticos" />
+        </Link>
+      </View>
 
-      <CampoTexto
-        etiqueta="Correo electrónico"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoComplete="email"
-        textContentType="emailAddress"
-        value={email}
-        onChangeText={setEmail}
-        error={errores.email}
-      />
-      <CampoTexto
-        etiqueta="Contraseña"
-        secureTextEntry
-        autoComplete="current-password"
-        textContentType="password"
-        value={password}
-        onChangeText={setPassword}
-        onSubmitEditing={entrar}
-        error={errores.password}
-      />
+      <View style={styles.tarjeta}>
+        <Text style={styles.tituloTarjeta}>Iniciar sesión</Text>
+        <Mensaje texto={aviso ?? error} />
 
-      <Boton titulo="Iniciar sesión" onPress={entrar} cargando={enviando} />
-
-      <View style={styles.enlaces}>
-        <Link href="/recuperar" style={styles.enlace}>
+        <CampoTexto
+          etiqueta="Correo electrónico"
+          placeholder="tucorreo@ejemplo.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          textContentType="emailAddress"
+          value={email}
+          onChangeText={setEmail}
+          error={errores.email}
+        />
+        <CampoTexto
+          etiqueta="Contraseña"
+          secureTextEntry
+          autoComplete="current-password"
+          textContentType="password"
+          value={password}
+          onChangeText={setPassword}
+          onSubmitEditing={entrar}
+          error={errores.password}
+        />
+        <Link href="/recuperar" style={styles.olvido}>
           ¿Olvidaste tu contraseña?
         </Link>
+
+        <Boton titulo="Iniciar sesión" icono="log-in-outline" onPress={entrar} cargando={enviando} />
+      </View>
+
+      <View style={styles.registro}>
+        <Text style={styles.registroTexto}>¿No tienes cuenta?</Text>
         <Link href="/registro" style={styles.enlace}>
           Crear una cuenta
         </Link>
       </View>
 
-      <View style={styles.separador} />
-      <Link href="/cotizador" asChild>
-        <Boton titulo="Cotizar sin registrarme" variante="secundario" />
-      </Link>
-      <View style={styles.espacio} />
-      <Link href="/goldtours" asChild>
-        <Boton titulo="Ver paquetes Goldtours" variante="secundario" />
-      </Link>
-
-      <Text style={[styles.estado, { color: health.status === 'done' && !health.ok ? Colors.danger : Colors.muted }]}>
-        {health.status === 'loading'
-          ? 'Verificando conexión…'
-          : health.ok
-            ? 'Servidor conectado'
-            : `Sin conexión al servidor: ${health.error}`}
-      </Text>
+      <View style={styles.estado}>
+        <View
+          style={[
+            styles.punto,
+            { backgroundColor: conectado ? Colors.success : sinConexion ? Colors.danger : Colors.border },
+          ]}
+        />
+        <Text style={[styles.estadoTexto, sinConexion && { color: Colors.danger }]}>
+          {health.status === 'loading'
+            ? 'Verificando conexión…'
+            : health.ok
+              ? 'Servidor conectado'
+              : `Sin conexión al servidor: ${health.error}`}
+        </Text>
+      </View>
     </PantallaFormulario>
   );
 }
 
 const styles = StyleSheet.create({
-  enlaces: { marginTop: Spacing.lg, gap: Spacing.md, alignItems: 'center' },
-  enlace: { color: Colors.primaryDark, fontSize: 15, fontWeight: '600' },
-  espacio: { height: Spacing.md },
-  separador: { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.lg },
-  estado: { marginTop: Spacing.xl, fontSize: 12, textAlign: 'center' },
+  marca: { alignItems: 'center', marginBottom: Spacing.lg },
+  nombre: { marginTop: Spacing.sm, fontSize: 24, fontWeight: '800', color: Colors.primary, letterSpacing: 0.5 },
+  trans: { color: Colors.accentDark },
+  lema: { marginTop: Spacing.xs, fontSize: 14, color: Colors.muted, textAlign: 'center' },
+  accesos: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg },
+  tarjeta: {
+    padding: Spacing.lg,
+    borderRadius: Radius + 4,
+    backgroundColor: Colors.background,
+    ...Sombra,
+  },
+  tituloTarjeta: { fontSize: 20, fontWeight: '800', color: Colors.text, marginBottom: Spacing.md },
+  olvido: {
+    alignSelf: 'flex-end',
+    color: Colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: -Spacing.xs,
+    marginBottom: Spacing.md,
+  },
+  registro: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: Spacing.lg },
+  registroTexto: { color: Colors.muted, fontSize: 15 },
+  enlace: { color: Colors.primary, fontSize: 15, fontWeight: '700' },
+  estado: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: Spacing.xl },
+  punto: { width: 8, height: 8, borderRadius: 4 },
+  estadoTexto: { fontSize: 12, color: Colors.muted },
 });

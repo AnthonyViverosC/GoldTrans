@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } f
 import { Boton } from '@/components/boton';
 import { DesgloseCotizacion } from '@/components/desglose-cotizacion';
 import { EstadoSolicitudTexto } from '@/components/estado-solicitud';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
@@ -76,10 +77,10 @@ export default function MisSolicitudes() {
         cargando ? (
           <ActivityIndicator color={Colors.primary} />
         ) : (
-          <Text style={styles.vacio}>
-            Aún no tienes solicitudes. Abre una cotización en la pestaña Cotizaciones y toca «Solicitar este
-            servicio».
-          </Text>
+          <EstadoVacio
+            icono="clipboard-outline"
+            texto={'Aún no tienes solicitudes. Abre una cotización en la pestaña Cotizaciones y toca «Solicitar este servicio».'}
+          />
         )
       }
       renderItem={({ item: s }) => {
