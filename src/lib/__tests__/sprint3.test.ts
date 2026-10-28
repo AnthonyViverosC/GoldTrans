@@ -1,5 +1,6 @@
 // Sprint 3 · HU-15 compartir · HU-16/17 solicitudes · HU-18 a HU-21 Goldtours.
 import {
+  destinatarioDesdePerfil,
   enlaceCorreo,
   enlaceWhatsApp,
   htmlCotizacion,
@@ -62,6 +63,43 @@ describe('compartir cotización (HU-15)', () => {
     expect(t).toContain('Van (hasta 15 pasajeros)');
     expect(t).toContain('• Recorrido (km): $ 291.200 (104 km × $ 2.800)');
     expect(t).toContain('*Total: $ 1.237.440*');
+  });
+
+  it('agrega las notas de la cotización oficial cuando se conoce la jornada', () => {
+    const t = textoCotizacion({ ...cotizacion, jornada_horas: 12, km_incluidos_dia: 150, valor_km_adicional: 1500 });
+    expect(t).toContain('Modalidad 12 horas');
+    expect(t).toContain('Base kilometraje: 150 km diarios y $ 1.500 por km adicional.');
+    expect(t).toContain('Incluye: vehículo, conductor, combustible, peajes y demás gastos operativos.');
+    // Las cotizaciones antiguas no tienen esos datos: no se inventan.
+    expect(textoCotizacion(cotizacion)).not.toContain('Base kilometraje');
+  });
+
+  it('el PDF sigue el formato oficial: fecha, destinatario, tabla y datos de la empresa', () => {
+    const html = htmlCotizacion({
+      ...cotizacion,
+      jornada_horas: 8,
+      created_at: '2026-10-22T03:00:00Z', // 21 de octubre en Colombia
+      destinatario: destinatarioDesdePerfil({
+        usuario_id: 'u',
+        tipo_persona: 'empresa',
+        nombre_completo: 'Ana Pérez',
+        tipo_documento: null,
+        numero_documento: null,
+        razon_social: 'COOTRANSERP',
+        nit: '900162246-4',
+        telefono: null,
+        ciudad: 'Villagarzón',
+        created_at: '',
+        updated_at: '',
+      }),
+    });
+    expect(html).toContain('La Hormiga, Valle del Guamuez - Putumayo, 21 de octubre de 2026.');
+    expect(html).toContain('<strong>COOTRANSERP</strong>');
+    expect(html).toContain('NIT 900162246-4');
+    expect(html).toContain('La Hormiga – Puerto Asís – La Hormiga');
+    expect(html).toContain('TOTAL DEL SERVICIO');
+    expect(html).toContain('CÓDIGO-SGI-OP-CT-01');
+    expect(html).toContain('901.760.920-1');
   });
 
   it('el PDF escapa el texto para no inyectar HTML', () => {

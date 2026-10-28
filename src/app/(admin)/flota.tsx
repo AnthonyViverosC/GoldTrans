@@ -11,7 +11,9 @@ import {
 } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
@@ -92,7 +94,7 @@ export default function Flota() {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>Aún no hay vehículos registrados.</Text>
+            <EstadoVacio icono="bus-outline" texto="Aún no hay vehículos registrados." />
           )
         }
         renderItem={({ item: v }) => {
@@ -227,16 +229,16 @@ function FormularioVehiculoModal({
         valor={datos.estado}
         onCambio={(v) => cambiar('estado', v)}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vencimiento SOAT (opcional)"
-        placeholder="AAAA-MM-DD"
+        opcional
         value={datos.soatVence}
         onChangeText={(v) => cambiar('soatVence', v)}
         error={errores.soatVence}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vencimiento revisión técnico-mecánica (opcional)"
-        placeholder="AAAA-MM-DD"
+        opcional
         value={datos.tecnomecanicaVence}
         onChangeText={(v) => cambiar('tecnomecanicaVence', v)}
         error={errores.tecnomecanicaVence}

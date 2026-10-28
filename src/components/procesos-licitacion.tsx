@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { EstadoItemTexto, EstadoVigenciaTexto } from '@/components/estado-vigencia';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
@@ -147,9 +149,10 @@ export function ProcesosLicitacion({ encabezado }: { encabezado?: ReactNode }) {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>
-              {procesos.length === 0 ? 'Aún no hay procesos de licitación registrados.' : 'No hay procesos en este grupo.'}
-            </Text>
+            <EstadoVacio
+              icono="briefcase-outline"
+              texto={procesos.length === 0 ? 'Aún no hay procesos de licitación registrados.' : 'No hay procesos en este grupo.'}
+            />
           )
         }
         renderItem={({ item: p }) => {
@@ -283,11 +286,8 @@ function FormularioProcesoVista({
         onChangeText={(v) => cambiar('objeto', v)}
         error={errores.objeto}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Fecha de cierre (entrega de propuestas)"
-        placeholder="AAAA-MM-DD"
-        keyboardType="numbers-and-punctuation"
-        maxLength={10}
         value={datos.fechaCierre}
         onChangeText={(v) => cambiar('fechaCierre', v)}
         error={errores.fechaCierre}

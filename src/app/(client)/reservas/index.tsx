@@ -4,6 +4,7 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Tex
 
 import { Boton } from '@/components/boton';
 import { EstadoReservaTexto } from '@/components/estado-reserva';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
@@ -70,9 +71,10 @@ export default function MisReservas() {
         cargando ? (
           <ActivityIndicator color={Colors.primary} />
         ) : (
-          <Text style={styles.vacio}>
-            Aún no tienes reservas. Elige un paquete en Goldtours, escoge la fecha de salida y toca «Reservar».
-          </Text>
+          <EstadoVacio
+            icono="ticket-outline"
+            texto={'Aún no tienes reservas. Elige un paquete en Goldtours, escoge la fecha de salida y toca «Reservar».'}
+          />
         )
       }
       renderItem={({ item: r }) => {

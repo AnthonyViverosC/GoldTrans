@@ -11,13 +11,18 @@ import {
 } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
+import { Insignia, type Tono } from '@/components/insignia';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { formatearPesos, hoyEnColombia } from '@/lib/cotizador';
+import { JORNADAS, formatearPesos, hoyEnColombia } from '@/lib/cotizador';
+import { listarRutas, type Ruta } from '@/lib/rutas';
 import {
+  ETIQUETA_JORNADA,
   ETIQUETA_VIGENCIA,
   TARIFA_VACIA,
   eliminarTarifa,
@@ -30,18 +35,28 @@ import {
   type FormularioTarifa,
   type Tarifa,
 } from '@/lib/tarifas';
+import type { Jornada } from '@/lib/cotizador';
 import { sinErrores, type Errores } from '@/lib/validacion';
 import { ETIQUETA_TIPO, TIPOS_VEHICULO, type TipoVehiculo } from '@/lib/vehiculos';
 
-const COLOR_VIGENCIA: Record<EstadoVigencia, string> = {
-  vigente: Colors.success,
-  futura: Colors.primaryDark,
-  vencida: Colors.danger,
+const TONO_VIGENCIA: Record<EstadoVigencia, Tono> = {
+  vigente: 'exito',
+  futura: 'info',
+  vencida: 'neutro',
 };
 
-// HU-10 · Administrar tarifas por tipo de vehículo y vigencia.
+const OPCIONES_JORNADA = JORNADAS.map((j) => ({ valor: String(j), texto: ETIQUETA_JORNADA[j] }));
+
+function nombreRuta(rutas: readonly Ruta[], id: string | null) {
+  if (!id) return 'Todas las rutas';
+  const r = rutas.find((x) => x.id === id);
+  return r ? `${r.origen} → ${r.destino}` : 'Ruta eliminada';
+}
+
+// HU-10 · Administrar tarifas por tipo de vehículo, jornada y vigencia (docs/tarifas.md).
 export default function Tarifas() {
   const [tarifas, setTarifas] = useState<Tarifa[]>([]);
+  const [rutas, setRutas] = useState<Ruta[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // null = formulario cerrado; { id: undefined } = nueva tarifa.
@@ -53,13 +68,12 @@ export default function Tarifas() {
 
   useEffect(() => {
     let vigente = true;
-    listarTarifas().then((r) => {
+    Promise.all([listarTarifas(), listarRutas()]).then(([t, r]) => {
       if (!vigente) return;
       setCargando(false);
-      if (r.ok) {
-        setTarifas(r.data);
-        setError(null);
-      } else setError(r.error);
+      if (t.ok) setTarifas(t.data);
+      if (r.ok) setRutas(r.data);
+      setError(!t.ok ? t.error : !r.ok ? r.error : null);
     });
     return () => {
       vigente = false;
@@ -84,7 +98,10 @@ export default function Tarifas() {
               titulo="Agregar tarifa"
               onPress={() => setEditando({ datos: { ...TARIFA_VACIA, vigenciaDesde: hoy } })}
             />
-            <View style={styles.espacio} />
+            <Text style={styles.ayuda}>
+              Valor por jornada a todo costo (vehículo, conductor, combustible y peajes). Una tarifa
+              de una ruta es un precio especial y prevalece sobre la general.
+            </Text>
             <Mensaje texto={error} />
           </>
         }
@@ -92,7 +109,7 @@ export default function Tarifas() {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>Aún no hay tarifas registradas.</Text>
+            <EstadoVacio icono="pricetags-outline" texto="Aún no hay tarifas registradas." />
           )
         }
         renderItem={({ item: t }) => {
@@ -104,14 +121,17 @@ export default function Tarifas() {
               onPress={() => setEditando({ id: t.id, datos: tarifaAFormulario(t) })}
               style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
               <View style={styles.filaTitulo}>
-                <Text style={styles.titulo}>{ETIQUETA_TIPO[t.tipo_vehiculo as TipoVehiculo]}</Text>
-                <Text style={[styles.estado, { color: COLOR_VIGENCIA[estado] }]}>
-                  {ETIQUETA_VIGENCIA[estado]}
+                <Text style={styles.titulo}>
+                  {ETIQUETA_TIPO[t.tipo_vehiculo as TipoVehiculo] ?? t.tipo_vehiculo} · {t.jornada_horas} h
                 </Text>
+                <Insignia texto={ETIQUETA_VIGENCIA[estado]} tono={TONO_VIGENCIA[estado]} />
               </View>
+              <Text style={styles.precio}>{formatearPesos(t.valor_jornada)} por jornada</Text>
               <Text style={styles.detalle}>
-                Base {formatearPesos(t.tarifa_base)} · {formatearPesos(t.valor_km)}/km ·{' '}
-                {formatearPesos(t.valor_dia)}/día
+                {t.km_incluidos_dia} km diarios incluidos · km adicional {formatearPesos(t.valor_km_adicional)}
+              </Text>
+              <Text style={[styles.detalle, t.ruta_id ? styles.especial : null]}>
+                {t.ruta_id ? `Precio especial: ${nombreRuta(rutas, t.ruta_id)}` : 'Todas las rutas'}
               </Text>
               <Text style={styles.detalle}>
                 Recargo fin de semana {t.recargo_fin_semana_pct} % · Desde {t.vigencia_desde}
@@ -132,6 +152,7 @@ export default function Tarifas() {
             id={editando.id}
             inicial={editando.datos}
             existentes={tarifas}
+            rutas={rutas}
             onCerrar={() => setEditando(null)}
             onGuardado={() => {
               setEditando(null);
@@ -148,12 +169,14 @@ function FormularioTarifaModal({
   id,
   inicial,
   existentes,
+  rutas,
   onCerrar,
   onGuardado,
 }: {
   id?: string;
   inicial: FormularioTarifa;
   existentes: readonly Tarifa[];
+  rutas: readonly Ruta[];
   onCerrar: () => void;
   onGuardado: () => void;
 }) {
@@ -200,26 +223,52 @@ function FormularioTarifaModal({
           setErrores((e) => ({ ...e, vigenciaDesde: undefined }));
         }}
       />
-      <CampoTexto
-        etiqueta="Tarifa base (COP)"
-        keyboardType="number-pad"
-        value={datos.tarifaBase}
-        onChangeText={(v) => cambiar('tarifaBase', v)}
-        error={errores.tarifaBase}
+      <SelectorOpciones
+        etiqueta="Jornada"
+        opciones={OPCIONES_JORNADA}
+        valor={String(datos.jornada)}
+        onCambio={(v) => {
+          cambiar('jornada', Number(v) as Jornada);
+          setErrores((e) => ({ ...e, vigenciaDesde: undefined }));
+        }}
+      />
+      <SelectorOpciones
+        etiqueta="Aplica a"
+        opciones={[
+          { valor: '', texto: 'Todas las rutas' },
+          ...rutas
+            .filter((r) => r.activo || r.id === datos.rutaId)
+            .map((r) => ({ valor: r.id, texto: `${r.origen} → ${r.destino}` })),
+        ]}
+        valor={datos.rutaId}
+        onCambio={(v) => {
+          cambiar('rutaId', v);
+          setErrores((e) => ({ ...e, vigenciaDesde: undefined }));
+        }}
       />
       <CampoTexto
-        etiqueta="Valor por kilómetro (COP)"
+        etiqueta="Valor por jornada (COP)"
         keyboardType="number-pad"
-        value={datos.valorKm}
-        onChangeText={(v) => cambiar('valorKm', v)}
-        error={errores.valorKm}
+        placeholder="580000"
+        value={datos.valorJornada}
+        onChangeText={(v) => cambiar('valorJornada', v)}
+        error={errores.valorJornada}
+        ayuda="Por día de servicio, a todo costo: vehículo, conductor, combustible y peajes"
       />
       <CampoTexto
-        etiqueta="Valor por día (COP)"
+        etiqueta="Kilómetros incluidos por día"
         keyboardType="number-pad"
-        value={datos.valorDia}
-        onChangeText={(v) => cambiar('valorDia', v)}
-        error={errores.valorDia}
+        value={datos.kmIncluidos}
+        onChangeText={(v) => cambiar('kmIncluidos', v)}
+        error={errores.kmIncluidos}
+      />
+      <CampoTexto
+        etiqueta="Valor del km adicional (COP)"
+        keyboardType="number-pad"
+        value={datos.valorKmAdicional}
+        onChangeText={(v) => cambiar('valorKmAdicional', v)}
+        error={errores.valorKmAdicional}
+        ayuda="Se cobra por cada km recorrido por encima de los incluidos"
       />
       <CampoTexto
         etiqueta="Recargo fin de semana (%)"
@@ -229,16 +278,15 @@ function FormularioTarifaModal({
         error={errores.recargoFinSemana}
         ayuda="Se aplica a los días del servicio que caen en sábado o domingo"
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vigente desde"
-        placeholder="AAAA-MM-DD"
         value={datos.vigenciaDesde}
         onChangeText={(v) => cambiar('vigenciaDesde', v)}
         error={errores.vigenciaDesde}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Vigente hasta (opcional)"
-        placeholder="AAAA-MM-DD"
+        opcional
         value={datos.vigenciaHasta}
         onChangeText={(v) => cambiar('vigenciaHasta', v)}
         error={errores.vigenciaHasta}
@@ -263,7 +311,7 @@ function FormularioTarifaModal({
 
 const styles = StyleSheet.create({
   lista: { padding: Spacing.md, gap: Spacing.md },
-  espacio: { height: Spacing.md },
+  ayuda: { fontSize: 13, color: Colors.muted, lineHeight: 18, marginVertical: Spacing.md },
   tarjeta: {
     padding: Spacing.md,
     borderRadius: Radius,
@@ -272,10 +320,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   presionada: { backgroundColor: Colors.surface },
-  filaTitulo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  titulo: { fontSize: 16, fontWeight: '700', color: Colors.text },
-  estado: { fontSize: 13, fontWeight: '600' },
+  filaTitulo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: Spacing.sm },
+  titulo: { flex: 1, fontSize: 16, fontWeight: '700', color: Colors.text },
+  precio: { fontSize: 18, fontWeight: '800', color: Colors.primary, marginTop: Spacing.xs },
   detalle: { fontSize: 14, color: Colors.muted, marginTop: 2 },
+  especial: { color: Colors.accentDark, fontWeight: '700' },
   vacio: { textAlign: 'center', color: Colors.muted, marginTop: Spacing.lg },
   botones: { gap: Spacing.md },
 });

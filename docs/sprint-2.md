@@ -14,6 +14,10 @@
 
 ## Fórmula
 
+> **Reemplazada** por las tarifas por jornada de las cotizaciones oficiales (migración
+> `20261029000000_tarifas_jornada.sql`). Ver [tarifas.md](tarifas.md). Lo que sigue describe el modelo
+> original del Sprint 2.
+
 ```
 valor_total = tarifa_base + (distancia × valor_km) + (dias × valor_dia) + peajes + recargo
 ```

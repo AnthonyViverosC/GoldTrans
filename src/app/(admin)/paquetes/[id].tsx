@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
@@ -512,16 +513,15 @@ function FormularioFechaModal({
 
   return (
     <PantallaFormulario titulo={fecha ? 'Editar salida' : 'Nueva salida'}>
-      <CampoTexto
+      <CampoFecha
         etiqueta="Fecha de salida"
-        placeholder="AAAA-MM-DD"
         value={datos.fechaSalida}
         onChangeText={cambiarSalida}
         error={errores.fechaSalida}
       />
-      <CampoTexto
+      <CampoFecha
         etiqueta="Fecha de regreso"
-        placeholder="AAAA-MM-DD"
+        minimo={datos.fechaSalida || undefined}
         value={datos.fechaRegreso}
         onChangeText={(v) => setDatos((d) => ({ ...d, fechaRegreso: v }))}
         error={errores.fechaRegreso}

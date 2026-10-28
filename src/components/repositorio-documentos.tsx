@@ -3,7 +3,9 @@ import { ActivityIndicator, FlatList, Modal, Pressable, RefreshControl, StyleShe
 
 import { AlertasVencimiento } from '@/components/alertas-vencimiento';
 import { Boton } from '@/components/boton';
+import { CampoFecha } from '@/components/campo-fecha';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { COLOR_VIGENCIA, EstadoVigenciaTexto } from '@/components/estado-vigencia';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
@@ -143,9 +145,10 @@ export function RepositorioDocumentos({ encabezado }: { encabezado?: ReactNode }
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>
-              {documentos.length === 0 ? 'Aún no hay documentos cargados.' : 'Ningún documento coincide con la búsqueda.'}
-            </Text>
+            <EstadoVacio
+              icono="folder-open-outline"
+              texto={documentos.length === 0 ? 'Aún no hay documentos cargados.' : 'Ningún documento coincide con la búsqueda.'}
+            />
           )
         }
         renderItem={({ item: d }) => {
@@ -563,20 +566,16 @@ function SeccionVigencia({
         </>
       ) : (
         <>
-          <CampoTexto
+          <CampoFecha
             etiqueta="Fecha de expedición (opcional)"
-            placeholder="AAAA-MM-DD"
-            keyboardType="numbers-and-punctuation"
-            maxLength={10}
+            opcional
+            maximo="hoy"
             value={datos.fechaExpedicion}
             onChangeText={(x) => cambiar('fechaExpedicion', x)}
             error={errores.fechaExpedicion}
           />
-          <CampoTexto
+          <CampoFecha
             etiqueta="Fecha de vencimiento"
-            placeholder="AAAA-MM-DD"
-            keyboardType="numbers-and-punctuation"
-            maxLength={10}
             value={datos.fechaVencimiento}
             onChangeText={(x) => cambiar('fechaVencimiento', x)}
             error={errores.fechaVencimiento}

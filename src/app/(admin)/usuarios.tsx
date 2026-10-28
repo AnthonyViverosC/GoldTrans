@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, Text, View } f
 
 import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { SelectorOpciones } from '@/components/selector-opciones';
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -85,7 +86,7 @@ export default function Usuarios() {
         cargando ? (
           <ActivityIndicator color={Colors.primary} />
         ) : (
-          <Text style={styles.vacio}>No hay usuarios que coincidan.</Text>
+          <EstadoVacio icono="people-outline" texto="No hay usuarios que coincidan." />
         )
       }
       renderItem={({ item: u }) => {

@@ -14,8 +14,8 @@ update public.usuarios set rol = 'admin' where email = 'admin@s3.co';
 
 insert into public.rutas (id, origen, destino, distancia_km) values
   ('cccccccc-0000-0000-0000-000000000001', 'S3 Origen', 'S3 Destino', 10);
-insert into public.tarifas (id, tipo_vehiculo, tarifa_base, valor_km, valor_dia, vigencia_desde) values
-  ('dddddddd-0000-0000-0000-000000000001', 'camioneta', 1, 1, 1, '2000-01-01');
+insert into public.tarifas (id, tipo_vehiculo, valor_jornada, valor_km_adicional, vigencia_desde) values
+  ('dddddddd-0000-0000-0000-000000000001', 'camioneta', 1, 1, '2000-01-01');
 insert into public.cotizaciones (id, usuario_id, ruta_id, origen, destino, tarifa_id, tipo_servicio,
     fecha_inicio, fecha_fin, dias, pasajeros, tipo_vehiculo, capacidad_vehiculo, distancia_km, valor_total)
 select v.id::uuid, v.usuario::uuid, 'cccccccc-0000-0000-0000-000000000001', 'S3 Origen', 'S3 Destino',

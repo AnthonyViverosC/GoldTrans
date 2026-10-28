@@ -181,10 +181,12 @@ export type Database = {
         Row: {
           id: string;
           tipo_vehiculo: string;
-          tarifa_base: number;
-          valor_km: number;
-          valor_dia: number;
+          jornada_horas: number;
+          valor_jornada: number;
+          km_incluidos_dia: number;
+          valor_km_adicional: number;
           recargo_fin_semana_pct: number;
+          ruta_id: string | null;
           vigencia_desde: string;
           vigencia_hasta: string | null;
           created_at: string;
@@ -193,10 +195,12 @@ export type Database = {
         Insert: {
           id?: string;
           tipo_vehiculo: string;
-          tarifa_base: number;
-          valor_km: number;
-          valor_dia: number;
+          jornada_horas?: number;
+          valor_jornada: number;
+          km_incluidos_dia?: number;
+          valor_km_adicional: number;
           recargo_fin_semana_pct?: number;
+          ruta_id?: string | null;
           vigencia_desde: string;
           vigencia_hasta?: string | null;
           created_at?: string;
@@ -205,16 +209,26 @@ export type Database = {
         Update: {
           id?: string;
           tipo_vehiculo?: string;
-          tarifa_base?: number;
-          valor_km?: number;
-          valor_dia?: number;
+          jornada_horas?: number;
+          valor_jornada?: number;
+          km_incluidos_dia?: number;
+          valor_km_adicional?: number;
           recargo_fin_semana_pct?: number;
+          ruta_id?: string | null;
           vigencia_desde?: string;
           vigencia_hasta?: string | null;
           created_at?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'tarifas_ruta_id_fkey';
+            columns: ['ruta_id'];
+            isOneToOne: false;
+            referencedRelation: 'rutas';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       cotizaciones: {
         Row: {
@@ -235,6 +249,9 @@ export type Database = {
           distancia_km: number;
           valor_total: number;
           duracion_ms: number | null;
+          jornada_horas: number | null;
+          km_incluidos_dia: number | null;
+          valor_km_adicional: number | null;
           created_at: string;
         };
         // Solo la Edge Function calcular-tarifa crea cotizaciones.

@@ -15,6 +15,7 @@ import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
 import { DesgloseCotizacion } from '@/components/desglose-cotizacion';
 import { EstadoSolicitudTexto } from '@/components/estado-solicitud';
+import { EstadoVacio } from '@/components/estado-vacio';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
@@ -105,9 +106,10 @@ export function BandejaSolicitudes({ encabezado }: { encabezado?: ReactNode }) {
           cargando ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.vacio}>
-              {filtro === 'pendiente' ? 'No hay solicitudes pendientes.' : 'No hay solicitudes en este estado.'}
-            </Text>
+            <EstadoVacio
+              icono="clipboard-outline"
+              texto={filtro === 'pendiente' ? 'No hay solicitudes pendientes.' : 'No hay solicitudes en este estado.'}
+            />
           )
         }
         renderItem={({ item: s }) => {

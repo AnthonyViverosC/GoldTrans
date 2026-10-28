@@ -153,7 +153,7 @@ async function probar() {
       datos(
         await servidor
           .from('tarifas')
-          .insert({ tipo_vehiculo: 'bus', tarifa_base: 100000, valor_km: 2000, valor_dia: 200000, vigencia_desde: hoy })
+          .insert({ tipo_vehiculo: 'bus', jornada_horas: 12, valor_jornada: 580000, valor_km_adicional: 1500, vigencia_desde: hoy })
           .select()
           .single(),
         'tarifa',
@@ -162,7 +162,7 @@ async function probar() {
     return 'datos de prueba creados';
   });
 
-  const peticion = () => ({ ruta_id: rutaId, tipo_servicio: 'ida', fecha_inicio: enDias(1), pasajeros: 1 });
+  const peticion = () => ({ ruta_id: rutaId, tipo_servicio: 'ida', fecha_inicio: enDias(1), pasajeros: 1, jornada_horas: 12 });
   await paso(`HU-05/13 · el visitante cotiza en menos de ${LIMITE_COTIZADOR_MS / 1000} s (RNF-04)`, async () => {
     const inicio = performance.now();
     const c = await invocar(visitante, 'calcular-tarifa', peticion());

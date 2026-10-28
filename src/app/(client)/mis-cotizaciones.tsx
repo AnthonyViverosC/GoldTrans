@@ -2,6 +2,7 @@ import { Link, router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AccesoRapido } from '@/components/acceso-rapido';
 import { AccionesCompartir } from '@/components/acciones-compartir';
 import { Boton } from '@/components/boton';
 import { DesgloseCotizacion } from '@/components/desglose-cotizacion';
@@ -11,7 +12,7 @@ import { Mensaje } from '@/components/mensaje';
 import { ModalSolicitud } from '@/components/modal-solicitud';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
-import { desdeGuardada } from '@/lib/compartir';
+import { desdeGuardada, destinatarioDesdePerfil } from '@/lib/compartir';
 import {
   ETIQUETA_SERVICIO,
   formatearPesos,
@@ -54,13 +55,22 @@ export default function MisCotizaciones() {
 
   return (
     <InicioRol
-      vacio={!cargando && !error && cotizaciones.length === 0 ? 'Aún no tienes cotizaciones guardadas.' : undefined}>
-      <Link href="/cotizador" asChild>
-        <Boton titulo="Nueva cotización" />
-      </Link>
-      <Link href="/goldtours" asChild>
-        <Boton titulo="Paquetes Goldtours" variante="secundario" />
-      </Link>
+      accesos={
+        <>
+          <Link href="/cotizador" asChild>
+            <AccesoRapido icono="calculator" titulo="Nueva cotización" detalle="Precio al instante" />
+          </Link>
+          <Link href="/goldtours" asChild>
+            <AccesoRapido icono="earth" titulo="Goldtours" detalle="Paquetes turísticos" />
+          </Link>
+        </>
+      }
+      vacio={
+        !cargando && !error && cotizaciones.length === 0
+          ? 'Aún no tienes cotizaciones guardadas. Usa "Nueva cotización" para empezar.'
+          : undefined
+      }>
+      {cotizaciones.length ? <Text style={styles.seccion}>Tus cotizaciones</Text> : null}
       <Mensaje texto={error} />
       {cargando ? <ActivityIndicator color={Colors.primary} /> : null}
 
@@ -97,7 +107,7 @@ export default function MisCotizaciones() {
             {expandida ? (
               <View style={styles.desglose}>
                 <DesgloseCotizacion lineas={c.detalle} valorTotal={c.valor_total} />
-                <AccionesCompartir cotizacion={desdeGuardada(c)} />
+                <AccionesCompartir cotizacion={desdeGuardada(c, destinatarioDesdePerfil(usuario?.perfil))} />
                 {!c.solicitud && c.fecha_inicio >= hoy ? (
                   <Boton titulo="Solicitar este servicio" onPress={() => setSolicitar(c)} />
                 ) : null}
@@ -120,6 +130,7 @@ export default function MisCotizaciones() {
 }
 
 const styles = StyleSheet.create({
+  seccion: { fontSize: 13, fontWeight: '700', color: Colors.muted, textTransform: 'uppercase', letterSpacing: 0.6 },
   tarjeta: {
     padding: Spacing.md,
     borderRadius: Radius,
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
   presionada: { backgroundColor: Colors.surface },
   filaTitulo: { flexDirection: 'row', justifyContent: 'space-between', gap: Spacing.md },
   ruta: { flex: 1, fontSize: 16, fontWeight: '700', color: Colors.text },
-  total: { fontSize: 16, fontWeight: '700', color: Colors.primaryDark },
+  total: { fontSize: 16, fontWeight: '800', color: Colors.primary },
   detalle: { fontSize: 14, color: Colors.muted, marginTop: 2 },
   desglose: { marginTop: Spacing.sm },
   solicitud: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.xs },

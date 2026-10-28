@@ -43,6 +43,14 @@ const styles = StyleSheet.create({
   descripcion: { fontSize: 15, color: Colors.text },
   detalle: { fontSize: 13, color: Colors.muted, marginTop: 2 },
   valor: { fontSize: 15, color: Colors.text, fontVariant: ['tabular-nums'] },
-  filaTotal: { borderBottomWidth: 0, paddingTop: Spacing.md },
-  total: { fontSize: 18, fontWeight: '700', color: Colors.primaryDark, fontVariant: ['tabular-nums'] },
+  filaTotal: {
+    borderBottomWidth: 0,
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+  },
+  total: { fontSize: 18, fontWeight: '800', color: Colors.onPrimary, fontVariant: ['tabular-nums'] },
 });

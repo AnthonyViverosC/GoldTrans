@@ -1,7 +1,7 @@
 // Sprint 2 · Edge Function calcular-tarifa
 // HU-12 sugerencia de vehículo · HU-13 cálculo al instante · HU-14 desglose · RNF-04 < 5 s
 //
-// POST { ruta_id, tipo_servicio, fecha_inicio, fecha_fin?, pasajeros }
+// POST { ruta_id, tipo_servicio, fecha_inicio, fecha_fin?, pasajeros, jornada_horas? (4 | 8 | 12, por defecto 12) }
 // Visitantes y usuarios con sesión. Se despliega con verify_jwt = false (la app usa una
 // publishable key, que no es un JWT); si llega el JWT de un usuario, la cotización queda a su nombre.
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -10,6 +10,7 @@ import {
   calcularCotizacion,
   elegirVehiculo,
   hoyEnColombia,
+  tarifasAplicables,
   validarSolicitud,
   type TarifaCalculo,
 } from '../_shared/calculo.ts';
@@ -71,7 +72,7 @@ Deno.serve(async (req) => {
     usuarioDeLaPeticion(req),
     db
       .from('rutas')
-      .select('id, origen, destino, distancia_km, peajes')
+      .select('id, origen, destino, distancia_km')
       .eq('id', s.ruta_id)
       .eq('activo', true)
       .maybeSingle(),
@@ -82,7 +83,12 @@ Deno.serve(async (req) => {
       .gte('capacidad_pasajeros', s.pasajeros),
     db
       .from('tarifas')
-      .select('id, tipo_vehiculo, tarifa_base, valor_km, valor_dia, recargo_fin_semana_pct')
+      .select(
+        'id, tipo_vehiculo, jornada_horas, valor_jornada, km_incluidos_dia, valor_km_adicional, recargo_fin_semana_pct, ruta_id',
+      )
+      // Los precios especiales de otras rutas los descarta tarifasAplicables: un segundo .or()
+      // no se combina de forma confiable con el de la vigencia.
+      .eq('jornada_horas', s.jornada_horas)
       .lte('vigencia_desde', s.fecha_inicio)
       .or(`vigencia_hasta.is.null,vigencia_hasta.gte.${s.fecha_inicio}`),
   ]);
@@ -94,15 +100,16 @@ Deno.serve(async (req) => {
   }
   if (!ruta.data) return responder({ error: 'La ruta no existe o no está disponible' }, 404);
 
+  // Precio especial de la ruta si lo hay; si no, la tarifa general del tipo de vehículo.
   const eleccion = elegirVehiculo(
     vehiculos.data ?? [],
-    (tarifas.data ?? []) as TarifaCalculo[],
+    tarifasAplicables((tarifas.data ?? []) as TarifaCalculo[], s.ruta_id, s.jornada_horas),
     s.pasajeros,
   );
   if (!eleccion) {
     return responder(
       {
-        error: `No hay un vehículo disponible con tarifa vigente para ${s.pasajeros} pasajeros. Contacta a un asesor de GOLDTRANS`,
+        error: `No hay un vehículo disponible con tarifa vigente de ${s.jornada_horas} horas para ${s.pasajeros} pasajeros. Prueba otra jornada o contacta a un asesor de GOLDTRANS`,
       },
       422,
     );
@@ -112,7 +119,7 @@ Deno.serve(async (req) => {
     tipo_servicio: s.tipo_servicio,
     fecha_inicio: s.fecha_inicio,
     fecha_fin: s.fecha_fin,
-    ruta: { distancia_km: Number(ruta.data.distancia_km), peajes: ruta.data.peajes },
+    ruta: { distancia_km: Number(ruta.data.distancia_km) },
     tarifa: eleccion.tarifa,
   });
   const duracionMs = Math.round(performance.now() - inicio);
@@ -134,6 +141,9 @@ Deno.serve(async (req) => {
       distancia_km: calculo.distancia_km,
       valor_total: calculo.valor_total,
       duracion_ms: duracionMs,
+      jornada_horas: s.jornada_horas,
+      km_incluidos_dia: eleccion.tarifa.km_incluidos_dia,
+      valor_km_adicional: eleccion.tarifa.valor_km_adicional,
     },
     p_detalle: calculo.desglose.map((linea, i) => ({ ...linea, orden: i + 1 })),
   });
@@ -154,6 +164,9 @@ Deno.serve(async (req) => {
     pasajeros: s.pasajeros,
     vehiculo: { tipo: eleccion.vehiculo.tipo, capacidad: eleccion.vehiculo.capacidad_pasajeros },
     distancia_km: calculo.distancia_km,
+    jornada_horas: s.jornada_horas,
+    km_incluidos_dia: eleccion.tarifa.km_incluidos_dia,
+    valor_km_adicional: eleccion.tarifa.valor_km_adicional,
     dias: calculo.dias,
     desglose: calculo.desglose,
     valor_total: calculo.valor_total,
