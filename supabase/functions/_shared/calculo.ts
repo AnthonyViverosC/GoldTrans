@@ -3,7 +3,11 @@
 // La usan la Edge Function calcular-tarifa (Deno) y la app (validación y pruebas con Jest),
 // por eso no tiene imports: debe compilar igual en ambos entornos.
 //
-// valor_total = tarifa_base + (distancia × valor_km) + (dias × valor_dia) + peajes + recargos
+// Modelo de las cotizaciones oficiales de GOLDTRANS (docs/tarifas.md), servicio a todo costo:
+// valor_total = días × valor_jornada
+//             + max(0, km recorridos − km_incluidos_dia × días) × valor_km_adicional
+//             + recargo de fin de semana
+// Los peajes van incluidos en el valor de la jornada.
 
 export const TIPOS_SERVICIO = ['ida', 'ida_vuelta', 'disponibilidad'] as const;
 export type TipoServicio = (typeof TIPOS_SERVICIO)[number];
@@ -11,7 +15,13 @@ export type TipoServicio = (typeof TIPOS_SERVICIO)[number];
 export const MAX_DIAS = 30;
 export const MAX_PASAJEROS = 80;
 
-export type Concepto = 'tarifa_base' | 'kilometraje' | 'dias' | 'peajes' | 'recargo';
+/** Horas de servicio por día (modalidad de las cotizaciones oficiales). */
+export const JORNADAS = [4, 8, 12] as const;
+export type Jornada = (typeof JORNADAS)[number];
+/** Jornada cuando la petición no la indica (versiones anteriores de la app). */
+export const JORNADA_PREDETERMINADA: Jornada = 12;
+
+export type Concepto = 'jornada' | 'km_adicional' | 'peajes' | 'recargo';
 
 export type LineaDesglose = {
   concepto: Concepto;
@@ -24,13 +34,16 @@ export type LineaDesglose = {
 export type TarifaCalculo = {
   id: string;
   tipo_vehiculo: string;
-  tarifa_base: number;
-  valor_km: number;
-  valor_dia: number;
+  jornada_horas: number;
+  valor_jornada: number;
+  km_incluidos_dia: number;
+  valor_km_adicional: number;
   recargo_fin_semana_pct: number;
+  /** null = tarifa general; con valor = precio especial de esa ruta. */
+  ruta_id: string | null;
 };
 
-export type RutaCalculo = { distancia_km: number; peajes: number };
+export type RutaCalculo = { distancia_km: number };
 
 export type VehiculoCalculo = { tipo: string; capacidad_pasajeros: number };
 
@@ -42,6 +55,7 @@ export type SolicitudCotizacion = {
   /** Último día de servicio. En "ida" siempre es igual a fecha_inicio. */
   fecha_fin: string;
   pasajeros: number;
+  jornada_horas: Jornada;
 };
 
 // ─── Fechas (AAAA-MM-DD, sin zona horaria) ────────────────────
@@ -132,6 +146,11 @@ export function validarSolicitud(body: unknown, hoy: string): Validacion<Solicit
     return { ok: false, error: `Entre 1 y ${MAX_PASAJEROS} pasajeros` };
   }
 
+  const jornada = b.jornada_horas ?? JORNADA_PREDETERMINADA;
+  if (!(JORNADAS as readonly unknown[]).includes(jornada)) {
+    return { ok: false, error: 'La jornada debe ser de 4, 8 o 12 horas' };
+  }
+
   return {
     ok: true,
     data: {
@@ -140,11 +159,30 @@ export function validarSolicitud(body: unknown, hoy: string): Validacion<Solicit
       fecha_inicio: inicio,
       fecha_fin: fin,
       pasajeros,
+      jornada_horas: jornada as Jornada,
     },
   };
 }
 
-// ─── Sugerencia de vehículo (HU-12) ───────────────────────────
+// ─── Tarifa aplicable y sugerencia de vehículo (HU-12) ────────
+
+/**
+ * Una tarifa por tipo de vehículo entre las vigentes de la jornada pedida:
+ * el precio especial de la ruta si existe, si no la tarifa general.
+ */
+export function tarifasAplicables<T extends TarifaCalculo>(
+  tarifas: readonly T[],
+  rutaId: string,
+  jornada: number,
+): T[] {
+  const porTipo = new Map<string, T>();
+  for (const t of tarifas) {
+    if (t.jornada_horas !== jornada || (t.ruta_id !== null && t.ruta_id !== rutaId)) continue;
+    const actual = porTipo.get(t.tipo_vehiculo);
+    if (!actual || (actual.ruta_id === null && t.ruta_id !== null)) porTipo.set(t.tipo_vehiculo, t);
+  }
+  return [...porTipo.values()];
+}
 
 /**
  * Elige el vehículo disponible más pequeño que lleve a todos los pasajeros
@@ -171,11 +209,15 @@ export type ResultadoCalculo = {
   /** 1 en "ida"; 2 cuando el vehículo vuelve al origen. */
   trayectos: number;
   distancia_km: number;
+  km_incluidos: number;
+  km_adicionales: number;
   dias: number;
   dias_fin_semana: number;
   desglose: LineaDesglose[];
   valor_total: number;
 };
+
+const redondear1 = (n: number) => Math.round(n * 10) / 10;
 
 export function calcularCotizacion(p: {
   tipo_servicio: TipoServicio;
@@ -186,42 +228,41 @@ export function calcularCotizacion(p: {
 }): ResultadoCalculo {
   const { tarifa } = p;
   const trayectos = p.tipo_servicio === 'ida' ? 1 : 2;
-  const distancia = Math.round(p.ruta.distancia_km * trayectos * 10) / 10;
+  const distancia = redondear1(p.ruta.distancia_km * trayectos);
   const fin = p.tipo_servicio === 'ida' ? p.fecha_inicio : p.fecha_fin;
   const dias = diasEntre(p.fecha_inicio, fin);
   const finSemana = diasFinDeSemana(p.fecha_inicio, fin);
 
-  const base = tarifa.tarifa_base;
-  const km = Math.round(distancia * tarifa.valor_km);
-  const valorDias = dias * tarifa.valor_dia;
-  // El recargo se aplica sobre la parte del servicio que cae en fin de semana;
-  // los peajes se cobran al costo y no llevan recargo.
+  const kmIncluidos = tarifa.km_incluidos_dia * dias;
+  const kmAdicionales = Math.max(0, redondear1(distancia - kmIncluidos));
+  const valorJornadas = dias * tarifa.valor_jornada;
+  const valorKm = Math.round(kmAdicionales * tarifa.valor_km_adicional);
+  // El recargo se reparte por día y se cobra por cada día que cae en fin de semana.
   const recargoPorDia = Math.round(
-    ((base + km + valorDias) * tarifa.recargo_fin_semana_pct) / 100 / dias,
+    ((valorJornadas + valorKm) * tarifa.recargo_fin_semana_pct) / 100 / dias,
   );
 
   const desglose: LineaDesglose[] = [
-    { concepto: 'tarifa_base', descripcion: 'Tarifa base', cantidad: 1, valor_unitario: base, subtotal: base },
     {
-      concepto: 'kilometraje',
-      descripcion: 'Recorrido (km)',
-      cantidad: distancia,
-      valor_unitario: tarifa.valor_km,
-      subtotal: km,
+      concepto: 'jornada',
+      descripcion: `Servicio jornada ${tarifa.jornada_horas} horas`,
+      cantidad: dias,
+      valor_unitario: tarifa.valor_jornada,
+      subtotal: valorJornadas,
     },
     {
-      concepto: 'dias',
-      descripcion: 'Días de servicio',
-      cantidad: dias,
-      valor_unitario: tarifa.valor_dia,
-      subtotal: valorDias,
+      concepto: 'km_adicional',
+      descripcion: `Kilómetros adicionales (${formatearKm(kmIncluidos)} km incluidos)`,
+      cantidad: kmAdicionales,
+      valor_unitario: tarifa.valor_km_adicional,
+      subtotal: valorKm,
     },
     {
       concepto: 'peajes',
-      descripcion: trayectos === 1 ? 'Peajes (un trayecto)' : 'Peajes (ida y regreso)',
+      descripcion: 'Peajes, combustible y conductor',
       cantidad: trayectos,
-      valor_unitario: p.ruta.peajes,
-      subtotal: trayectos * p.ruta.peajes,
+      valor_unitario: 0,
+      subtotal: 0,
     },
     {
       concepto: 'recargo',
@@ -235,9 +276,16 @@ export function calcularCotizacion(p: {
   return {
     trayectos,
     distancia_km: distancia,
+    km_incluidos: kmIncluidos,
+    km_adicionales: kmAdicionales,
     dias,
     dias_fin_semana: finSemana,
     desglose,
     valor_total: desglose.reduce((total, l) => total + l.subtotal, 0),
   };
+}
+
+/** 1500 → "1.500" (sin Intl: debe funcionar igual en Deno y en Hermes). */
+function formatearKm(km: number): string {
+  return String(km).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }

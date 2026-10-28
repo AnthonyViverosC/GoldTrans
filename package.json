@@ -56,7 +56,9 @@
     "test:ci": "jest --ci --passWithNoTests",
     "test:db": "supabase test db",
     "test:rendimiento": "node --env-file=.env scripts/rendimiento-cotizador.mjs",
-    "test:integracion": "node --env-file=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/integracion.mjs"
+    "test:integracion": "node --env-file=.env --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/integracion.mjs",
+    "demo:crear": "node --env-file=.env scripts/datos-ejemplo.mjs --crear",
+    "demo:borrar": "node --env-file=.env scripts/datos-ejemplo.mjs --borrar"
   },
   "private": true,
   "jest": {

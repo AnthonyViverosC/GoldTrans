@@ -104,7 +104,7 @@ export default function Rutas() {
             <Text style={styles.detalle}>
               {formatearDecimal(r.distancia_km)} km
               {r.duracion_horas != null ? ` · ${formatearDecimal(r.duracion_horas)} h` : ''}
-              {' · '}Peajes {formatearPesos(r.peajes)}
+              {r.peajes > 0 ? ` · Peajes ${formatearPesos(r.peajes)} (incluidos)` : ''}
             </Text>
           </Pressable>
         )}
@@ -206,11 +206,12 @@ function FormularioRutaModal({
         error={errores.duracionHoras}
       />
       <CampoTexto
-        etiqueta="Peajes por trayecto (COP)"
+        etiqueta="Peajes por trayecto (COP, referencia)"
         keyboardType="number-pad"
         value={datos.peajes}
         onChangeText={(v) => cambiar('peajes', v)}
         error={errores.peajes}
+        ayuda="Costo interno: el servicio es a todo costo y no se cobra aparte al cliente"
       />
       <SelectorOpciones
         etiqueta="Estado"

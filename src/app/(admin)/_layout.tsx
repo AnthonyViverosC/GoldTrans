@@ -11,7 +11,7 @@ export default function AdminLayout() {
       <Tabs.Screen name="tarifas" options={{ title: 'Tarifas', tabBarIcon: iconoPestana('pricetags') }} />
       <Tabs.Screen
         name="paquetes"
-        options={{ title: 'Paquetes', headerShown: false, tabBarIcon: iconoPestana('earth') }}
+        options={{ title: 'Paquetes', headerShown: false, popToTopOnBlur: true, tabBarIcon: iconoPestana('earth') }}
       />
       <Tabs.Screen name="ventas" options={{ title: 'Ventas', tabBarIcon: iconoPestana('cash') }} />
       <Tabs.Screen

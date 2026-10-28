@@ -6,17 +6,21 @@ import { supabase } from '@/lib/supabase';
 import type { Tables } from '@/types/database';
 
 import type {
+  Jornada,
   LineaDesglose,
   TipoServicio,
 } from '../../supabase/functions/_shared/calculo';
 
 export {
+  JORNADAS,
+  JORNADA_PREDETERMINADA,
   MAX_DIAS,
   TIPOS_SERVICIO,
   diasEntre,
   esFechaValida,
   hoyEnColombia,
   sumarDias,
+  type Jornada,
   type LineaDesglose,
   type TipoServicio,
 } from '../../supabase/functions/_shared/calculo';
@@ -33,6 +37,7 @@ export type PeticionCotizacion = {
   fecha_inicio: string;
   fecha_fin?: string | null;
   pasajeros: number;
+  jornada_horas: Jornada;
 };
 
 /** Respuesta de calcular-tarifa. */
@@ -47,6 +52,9 @@ export type Cotizacion = {
   pasajeros: number;
   vehiculo: { tipo: string; capacidad: number };
   distancia_km: number;
+  jornada_horas: Jornada;
+  km_incluidos_dia: number;
+  valor_km_adicional: number;
   dias: number;
   desglose: LineaDesglose[];
   valor_total: number;
@@ -81,16 +89,25 @@ function plural(n: number, singular: string, varios: string) {
   return `${formatearDecimal(n)} ${n === 1 ? singular : varios}`;
 }
 
-/** HU-14 · Cómo se obtuvo el subtotal de cada línea ("265 km × $ 2.500"). */
+/** HU-14 · Cómo se obtuvo el subtotal de cada línea ("2 días × $ 580.000"). */
 export function detalleLinea(l: LineaDesgloseVista): string | null {
   const unitario = formatearPesos(l.valor_unitario);
   switch (l.concepto) {
+    case 'jornada':
+      return `${plural(l.cantidad, 'día', 'días')} × ${unitario}`;
+    case 'km_adicional':
+      return l.cantidad === 0
+        ? 'No aplica: el recorrido está dentro de los km incluidos'
+        : `${formatearDecimal(l.cantidad)} km × ${unitario}`;
+    // Cotizaciones anteriores a las tarifas por jornada.
     case 'kilometraje':
       return `${formatearDecimal(l.cantidad)} km × ${unitario}`;
     case 'dias':
       return `${plural(l.cantidad, 'día', 'días')} × ${unitario}`;
     case 'peajes':
-      return `${plural(l.cantidad, 'trayecto', 'trayectos')} × ${unitario}`;
+      return l.valor_unitario === 0
+        ? 'Incluidos: servicio a todo costo'
+        : `${plural(l.cantidad, 'trayecto', 'trayectos')} × ${unitario}`;
     case 'recargo':
       return l.cantidad === 0
         ? 'No aplica: el servicio no incluye sábado ni domingo'

@@ -6,20 +6,26 @@ import {
   elegirVehiculo,
   hoyEnColombia,
   sumarDias,
+  tarifasAplicables,
   validarSolicitud,
   type TarifaCalculo,
 } from '../../../supabase/functions/_shared/calculo';
 
-const van: TarifaCalculo = {
-  id: 't-van',
-  tipo_vehiculo: 'van',
-  tarifa_base: 150_000,
-  valor_km: 2_500,
-  valor_dia: 200_000,
-  recargo_fin_semana_pct: 20,
+// Valores de la cotización oficial a COOTRANSERP (docs/Ejemplos): camioneta 4x4 jornada 12 horas
+// $580.000, 150 km diarios y $1.500 por km adicional.
+const camioneta: TarifaCalculo = {
+  id: 't-camioneta',
+  tipo_vehiculo: 'camioneta',
+  jornada_horas: 12,
+  valor_jornada: 580_000,
+  km_incluidos_dia: 150,
+  valor_km_adicional: 1_500,
+  recargo_fin_semana_pct: 0,
+  ruta_id: null,
 };
-const ruta = { distancia_km: 132.5, peajes: 18_000 };
+const van: TarifaCalculo = { ...camioneta, id: 't-van', tipo_vehiculo: 'van', valor_jornada: 700_000 };
 const RUTA_ID = '3f1c2a8e-4b5d-4c6e-8f70-1a2b3c4d5e6f';
+const OTRA_RUTA = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
 
 describe('fechas', () => {
   it('usa la fecha de Colombia (UTC-5)', () => {
@@ -50,8 +56,13 @@ describe('validarSolicitud (HU-11)', () => {
   };
 
   it('acepta una solicitud válida y en "ida" ignora la fecha final', () => {
-    const r = validarSolicitud({ ...base, fecha_fin: '2026-10-25' }, hoy);
-    expect(r).toEqual({ ok: true, data: { ...base, fecha_fin: '2026-10-21' } });
+    const r = validarSolicitud({ ...base, fecha_fin: '2026-10-25', jornada_horas: 8 }, hoy);
+    expect(r).toEqual({ ok: true, data: { ...base, fecha_fin: '2026-10-21', jornada_horas: 8 } });
+  });
+
+  it('sin jornada usa 12 horas (versiones anteriores de la app)', () => {
+    const r = validarSolicitud(base, hoy);
+    expect(r.ok && r.data.jornada_horas).toBe(12);
   });
 
   it('ida y vuelta sin fecha de regreso = mismo día', () => {
@@ -70,6 +81,8 @@ describe('validarSolicitud (HU-11)', () => {
     [{ pasajeros: 81 }, 'Entre 1 y 80 pasajeros'],
     [{ pasajeros: '12' }, 'Entre 1 y 80 pasajeros'],
     [{ pasajeros: 2.5 }, 'Entre 1 y 80 pasajeros'],
+    [{ jornada_horas: 6 }, 'La jornada debe ser de 4, 8 o 12 horas'],
+    [{ jornada_horas: '12' }, 'La jornada debe ser de 4, 8 o 12 horas'],
   ])('rechaza %j', (cambio, error) => {
     expect(validarSolicitud({ ...base, ...cambio }, hoy)).toEqual({ ok: false, error });
   });
@@ -77,6 +90,25 @@ describe('validarSolicitud (HU-11)', () => {
   it('rechaza cuerpos que no son objetos', () => {
     expect(validarSolicitud(null, hoy)).toEqual({ ok: false, error: 'Solicitud inválida' });
     expect(validarSolicitud('hola', hoy)).toEqual({ ok: false, error: 'Solicitud inválida' });
+  });
+});
+
+describe('tarifasAplicables', () => {
+  const especial: TarifaCalculo = { ...camioneta, id: 't-especial', valor_jornada: 780_000, ruta_id: RUTA_ID };
+  const otraRuta: TarifaCalculo = { ...camioneta, id: 't-otra', valor_jornada: 850_000, ruta_id: OTRA_RUTA };
+  const ocho: TarifaCalculo = { ...camioneta, id: 't-8h', jornada_horas: 8, valor_jornada: 450_000 };
+
+  it('el precio especial de la ruta prevalece sobre la tarifa general', () => {
+    const ids = (r: TarifaCalculo[]) => r.map((t) => t.id).sort();
+    expect(ids(tarifasAplicables([camioneta, especial, van], RUTA_ID, 12))).toEqual(['t-especial', 't-van']);
+    // El orden de llegada no cambia el resultado.
+    expect(ids(tarifasAplicables([especial, camioneta], RUTA_ID, 12))).toEqual(['t-especial']);
+  });
+
+  it('ignora precios de otras rutas y de otras jornadas', () => {
+    expect(tarifasAplicables([camioneta, otraRuta, ocho], RUTA_ID, 12).map((t) => t.id)).toEqual(['t-camioneta']);
+    expect(tarifasAplicables([camioneta, ocho], RUTA_ID, 8).map((t) => t.id)).toEqual(['t-8h']);
+    expect(tarifasAplicables([camioneta], RUTA_ID, 4)).toEqual([]);
   });
 });
 
@@ -89,6 +121,7 @@ describe('elegirVehiculo (HU-12)', () => {
   ];
 
   it('sugiere el vehículo más pequeño que lleva a todos', () => {
+    expect(elegirVehiculo(flota, [van, bus, camioneta], 3)?.vehiculo.tipo).toBe('camioneta');
     expect(elegirVehiculo(flota, [van, bus], 12)?.vehiculo.tipo).toBe('van');
     expect(elegirVehiculo(flota, [van, bus], 16)?.vehiculo.tipo).toBe('bus');
   });
@@ -110,58 +143,72 @@ describe('calcularCotizacion (HU-13 · HU-14)', () => {
   const subtotales = (r: ReturnType<typeof calcularCotizacion>) =>
     Object.fromEntries(r.desglose.map((l) => [l.concepto, l.subtotal]));
 
-  it('solo ida entre semana: base + km + 1 día + peajes, sin recargo', () => {
+  it('jornada de 12 horas dentro de los 150 km: solo el valor de la jornada (COOTRANSERP)', () => {
+    const r = calcularCotizacion({
+      tipo_servicio: 'ida_vuelta',
+      fecha_inicio: '2026-10-21',
+      fecha_fin: '2026-10-21',
+      ruta: { distancia_km: 62 }, // Puerto Asís – La Hormiga
+      tarifa: camioneta,
+    });
+    expect(r.distancia_km).toBe(124);
+    expect(r.km_adicionales).toBe(0);
+    expect(subtotales(r)).toEqual({ jornada: 580_000, km_adicional: 0, peajes: 0, recargo: 0 });
+    expect(r.valor_total).toBe(580_000);
+  });
+
+  it('cobra solo los km que pasan de los incluidos', () => {
+    const r = calcularCotizacion({
+      tipo_servicio: 'ida_vuelta',
+      fecha_inicio: '2026-10-21',
+      fecha_fin: '2026-10-21',
+      ruta: { distancia_km: 120.5 },
+      tarifa: camioneta,
+    });
+    // 241 km recorridos − 150 incluidos = 91 km × $1.500
+    expect(r.km_adicionales).toBe(91);
+    expect(subtotales(r).km_adicional).toBe(136_500);
+    expect(r.valor_total).toBe(716_500);
+  });
+
+  it('por días: los km incluidos se suman por cada día (FUNDESAC, $550.000 y $1.200)', () => {
+    const r = calcularCotizacion({
+      tipo_servicio: 'disponibilidad',
+      fecha_inicio: '2026-10-19',
+      fecha_fin: '2026-10-21',
+      ruta: { distancia_km: 250 },
+      tarifa: { ...camioneta, valor_jornada: 550_000, valor_km_adicional: 1_200 },
+    });
+    expect(r.dias).toBe(3);
+    expect(r.km_incluidos).toBe(450);
+    // 500 km − 450 incluidos = 50 km × $1.200
+    expect(subtotales(r)).toEqual({ jornada: 1_650_000, km_adicional: 60_000, peajes: 0, recargo: 0 });
+  });
+
+  it('el recargo se cobra por los días de fin de semana', () => {
+    const r = calcularCotizacion({
+      tipo_servicio: 'disponibilidad',
+      fecha_inicio: '2026-10-16',
+      fecha_fin: '2026-10-19',
+      ruta: { distancia_km: 50 },
+      tarifa: { ...camioneta, recargo_fin_semana_pct: 20 },
+    });
+    // 4 jornadas × 580.000 × 20 % / 4 días = 116.000 por día; vie → lun tiene 2 de fin de semana
+    expect(r.dias_fin_semana).toBe(2);
+    expect(subtotales(r).recargo).toBe(232_000);
+    expect(r.valor_total).toBe(2_552_000);
+  });
+
+  it('los peajes van incluidos: la línea existe pero no suma', () => {
     const r = calcularCotizacion({
       tipo_servicio: 'ida',
       fecha_inicio: '2026-10-21',
       fecha_fin: '2026-10-21',
-      ruta,
-      tarifa: van,
+      ruta: { distancia_km: 30 },
+      tarifa: camioneta,
     });
-    expect(r.trayectos).toBe(1);
-    expect(r.distancia_km).toBe(132.5);
-    expect(subtotales(r)).toEqual({
-      tarifa_base: 150_000,
-      kilometraje: 331_250,
-      dias: 200_000,
-      peajes: 18_000,
-      recargo: 0,
-    });
-    expect(r.valor_total).toBe(699_250);
-  });
-
-  it('ida y vuelta vie → lun: distancia y peajes dobles, recargo por 2 días de fin de semana', () => {
-    const r = calcularCotizacion({
-      tipo_servicio: 'ida_vuelta',
-      fecha_inicio: '2026-10-16',
-      fecha_fin: '2026-10-19',
-      ruta,
-      tarifa: van,
-    });
-    expect(r.distancia_km).toBe(265);
-    expect(r.dias).toBe(4);
-    expect(r.dias_fin_semana).toBe(2);
-    // (150.000 + 662.500 + 800.000) × 20 % / 4 días = 80.625 por día de fin de semana
-    expect(subtotales(r)).toEqual({
-      tarifa_base: 150_000,
-      kilometraje: 662_500,
-      dias: 800_000,
-      peajes: 36_000,
-      recargo: 161_250,
-    });
-    expect(r.valor_total).toBe(1_809_750);
-  });
-
-  it('servicio de un día en sábado lleva el recargo completo', () => {
-    const r = calcularCotizacion({
-      tipo_servicio: 'ida',
-      fecha_inicio: '2026-10-17',
-      fecha_fin: '2026-10-17',
-      ruta,
-      tarifa: van,
-    });
-    expect(subtotales(r).recargo).toBe(136_250);
-    expect(r.valor_total).toBe(835_500);
+    const peajes = r.desglose.find((l) => l.concepto === 'peajes');
+    expect(peajes).toMatchObject({ cantidad: 1, valor_unitario: 0, subtotal: 0 });
   });
 
   it('el total siempre es la suma del desglose y cada subtotal cuadra con cantidad × unitario', () => {
@@ -169,19 +216,14 @@ describe('calcularCotizacion (HU-13 · HU-14)', () => {
       tipo_servicio: 'disponibilidad',
       fecha_inicio: '2026-10-14',
       fecha_fin: '2026-10-26',
-      ruta: { distancia_km: 47.3, peajes: 9_700 },
-      tarifa: { ...van, valor_km: 2_333, recargo_fin_semana_pct: 15 },
+      ruta: { distancia_km: 1_047.3 },
+      tarifa: { ...van, valor_km_adicional: 1_333, recargo_fin_semana_pct: 15 },
     });
     expect(r.valor_total).toBe(r.desglose.reduce((s, l) => s + l.subtotal, 0));
-    for (const l of r.desglose.filter((x) => x.concepto !== 'kilometraje')) {
+    for (const l of r.desglose.filter((x) => x.concepto !== 'km_adicional')) {
       expect(l.subtotal).toBe(l.cantidad * l.valor_unitario);
     }
-    expect(r.desglose.map((l) => l.concepto)).toEqual([
-      'tarifa_base',
-      'kilometraje',
-      'dias',
-      'peajes',
-      'recargo',
-    ]);
+    expect(r.desglose.map((l) => l.concepto)).toEqual(['jornada', 'km_adicional', 'peajes', 'recargo']);
+    expect(r.desglose[1].descripcion).toBe('Kilómetros adicionales (1.950 km incluidos)');
   });
 });

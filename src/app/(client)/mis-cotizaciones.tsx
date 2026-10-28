@@ -12,7 +12,7 @@ import { Mensaje } from '@/components/mensaje';
 import { ModalSolicitud } from '@/components/modal-solicitud';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
-import { desdeGuardada } from '@/lib/compartir';
+import { desdeGuardada, destinatarioDesdePerfil } from '@/lib/compartir';
 import {
   ETIQUETA_SERVICIO,
   formatearPesos,
@@ -107,7 +107,7 @@ export default function MisCotizaciones() {
             {expandida ? (
               <View style={styles.desglose}>
                 <DesgloseCotizacion lineas={c.detalle} valorTotal={c.valor_total} />
-                <AccionesCompartir cotizacion={desdeGuardada(c)} />
+                <AccionesCompartir cotizacion={desdeGuardada(c, destinatarioDesdePerfil(usuario?.perfil))} />
                 {!c.solicitud && c.fecha_inicio >= hoy ? (
                   <Boton titulo="Solicitar este servicio" onPress={() => setSolicitar(c)} />
                 ) : null}

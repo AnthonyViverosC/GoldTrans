@@ -15,7 +15,7 @@ export default function ClientLayout() {
       />
       <Tabs.Screen
         name="reservas"
-        options={{ title: 'Reservas', headerShown: false, tabBarIcon: iconoPestana('ticket') }}
+        options={{ title: 'Reservas', headerShown: false, popToTopOnBlur: true, tabBarIcon: iconoPestana('ticket') }}
       />
     </Tabs>
   );

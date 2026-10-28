@@ -50,13 +50,22 @@ describe('rutas (HU-09)', () => {
 });
 
 describe('tarifas (HU-10)', () => {
-  const tarifa = (desde: string, hasta: string | null, tipo = 'van', id = 'x'): Tarifa => ({
+  const tarifa = (
+    desde: string,
+    hasta: string | null,
+    tipo = 'camioneta',
+    id = 'x',
+    extra: Partial<Tarifa> = {},
+  ): Tarifa => ({
     id,
     tipo_vehiculo: tipo,
-    tarifa_base: 1,
-    valor_km: 1,
-    valor_dia: 1,
+    jornada_horas: 12,
+    valor_jornada: 1,
+    km_incluidos_dia: 150,
+    valor_km_adicional: 1,
     recargo_fin_semana_pct: 0,
+    ruta_id: null,
+    ...extra,
     vigencia_desde: desde,
     vigencia_hasta: hasta,
     created_at: '',
@@ -64,9 +73,8 @@ describe('tarifas (HU-10)', () => {
   });
   const valida = {
     ...TARIFA_VACIA,
-    tarifaBase: '$ 150.000',
-    valorKm: '2500',
-    valorDia: '200.000',
+    valorJornada: '$ 580.000',
+    valorKmAdicional: '1.500',
     recargoFinSemana: '20',
     vigenciaDesde: '2026-01-01',
     vigenciaHasta: '2026-06-30',
@@ -83,31 +91,41 @@ describe('tarifas (HU-10)', () => {
     expect(vigenciasSeSuperponen({ desde: bd, hasta: bh }, { desde: ad, hasta: ah })).toBe(esperado);
   });
 
-  it('acepta una tarifa válida y convierte los pesos', () => {
+  it('acepta una tarifa válida y convierte los pesos (valores de las cotizaciones oficiales)', () => {
     expect(validarTarifa(valida)).toEqual({});
     expect(formularioATarifa(valida)).toEqual({
-      tipo_vehiculo: 'van',
-      tarifa_base: 150000,
-      valor_km: 2500,
-      valor_dia: 200000,
+      tipo_vehiculo: 'camioneta',
+      jornada_horas: 12,
+      valor_jornada: 580000,
+      km_incluidos_dia: 150,
+      valor_km_adicional: 1500,
       recargo_fin_semana_pct: 20,
+      ruta_id: null,
       vigencia_desde: '2026-01-01',
       vigencia_hasta: '2026-06-30',
     });
+    expect(formularioATarifa({ ...valida, rutaId: 'r1', jornada: 8 })).toMatchObject({ ruta_id: 'r1', jornada_horas: 8 });
   });
 
-  it('no permite vigencias superpuestas del mismo tipo de vehículo', () => {
-    const existentes = [tarifa('2026-06-01', null, 'van', 'otra')];
+  it('no permite vigencias superpuestas del mismo vehículo, jornada y ruta', () => {
+    const existentes = [tarifa('2026-06-01', null, 'camioneta', 'otra')];
     expect(validarTarifa(valida, existentes).vigenciaDesde).toBe(MENSAJE_SUPERPOSICION);
-    // Otro tipo de vehículo, o la misma tarifa en edición, no cuentan.
+    // Otro tipo de vehículo, otra jornada, un precio especial de ruta o la misma tarifa en edición no cuentan.
     expect(validarTarifa(valida, [tarifa('2026-06-01', null, 'bus')])).toEqual({});
+    expect(validarTarifa(valida, [tarifa('2026-06-01', null, 'camioneta', 'y', { jornada_horas: 8 })])).toEqual({});
+    expect(validarTarifa(valida, [tarifa('2026-06-01', null, 'camioneta', 'y', { ruta_id: 'r1' })])).toEqual({});
     expect(validarTarifa(valida, existentes, 'otra')).toEqual({});
+    // Dos precios especiales de la misma ruta sí chocan.
+    const especial = [tarifa('2026-06-01', null, 'camioneta', 'y', { ruta_id: 'r1' })];
+    expect(validarTarifa({ ...valida, rutaId: 'r1' }, especial).vigenciaDesde).toBe(MENSAJE_SUPERPOSICION);
   });
 
   it('rechaza "hasta" anterior a "desde" y valores fuera de rango', () => {
     expect(validarTarifa({ ...valida, vigenciaHasta: '2025-12-31' }).vigenciaHasta).toBeDefined();
     expect(validarTarifa({ ...valida, recargoFinSemana: '101' }).recargoFinSemana).toBeDefined();
-    expect(validarTarifa({ ...valida, valorKm: '-5' }).valorKm).toBeDefined();
+    expect(validarTarifa({ ...valida, valorKmAdicional: '-5' }).valorKmAdicional).toBeDefined();
+    expect(validarTarifa({ ...valida, valorJornada: '' }).valorJornada).toBeDefined();
+    expect(validarTarifa({ ...valida, kmIncluidos: '2001' }).kmIncluidos).toBeDefined();
     expect(validarTarifa({ ...valida, vigenciaDesde: '' }).vigenciaDesde).toBeDefined();
   });
 
@@ -133,6 +151,7 @@ describe('cotizador (HU-13)', () => {
     tipo_servicio: 'ida' as const,
     fecha_inicio: '2026-10-21',
     pasajeros: 3,
+    jornada_horas: 12 as const,
   };
 
   it('invoca calcular-tarifa y devuelve la cotización', async () => {

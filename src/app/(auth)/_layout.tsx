@@ -3,6 +3,9 @@ import { Stack } from 'expo-router';
 import { opcionesEncabezado } from '@/components/navegacion';
 import { Colors } from '@/constants/theme';
 
+// Registro o recuperación abiertos por enlace directo: la flecha regresa al inicio de sesión.
+export const unstable_settings = { initialRouteName: 'login' };
+
 export default function AuthLayout() {
   return (
     <Stack

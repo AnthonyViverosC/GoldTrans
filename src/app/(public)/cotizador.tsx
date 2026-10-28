@@ -14,9 +14,11 @@ import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { SelectorOpciones } from '@/components/selector-opciones';
 import { Colors, Radius, Sombra, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
-import { desdeRespuesta } from '@/lib/compartir';
+import { desdeRespuesta, destinatarioDesdePerfil, hablarConAsesor } from '@/lib/compartir';
 import {
   ETIQUETA_SERVICIO,
+  JORNADAS,
+  JORNADA_PREDETERMINADA,
   MAX_DIAS,
   TIPOS_SERVICIO,
   cotizar,
@@ -25,6 +27,7 @@ import {
   hoyEnColombia,
   sumarDias,
   type Cotizacion,
+  type Jornada,
   type TipoServicio,
 } from '@/lib/cotizador';
 import type { Rol } from '@/lib/roles';
@@ -33,6 +36,7 @@ import { requerido, sinErrores, validarEntero, validarFecha, type Errores } from
 import { ETIQUETA_TIPO, type TipoVehiculo } from '@/lib/vehiculos';
 
 const SERVICIOS = TIPOS_SERVICIO.map((s) => ({ valor: s, texto: ETIQUETA_SERVICIO[s] }));
+const OPCIONES_JORNADA = JORNADAS.map((j) => ({ valor: String(j), texto: `${j} horas` }));
 
 type Campo = 'ruta' | 'fechaInicio' | 'fechaFin' | 'pasajeros';
 
@@ -58,6 +62,7 @@ export default function Cotizador() {
   const [fechaInicio, setFechaInicio] = useState(() => sumarDias(hoy, 1));
   const [fechaFin, setFechaFin] = useState('');
   const [pasajeros, setPasajeros] = useState('');
+  const [jornada, setJornada] = useState<Jornada>(JORNADA_PREDETERMINADA);
   const [errores, setErrores] = useState<Errores<Campo>>({});
   const [error, setError] = useState<string | null>(null);
   const [cotizando, setCotizando] = useState(false);
@@ -121,6 +126,7 @@ export default function Cotizador() {
       fecha_inicio: fechaInicio.trim(),
       fecha_fin: conFin ? fechaFin.trim() || null : null,
       pasajeros: Number(pasajeros),
+      jornada_horas: jornada,
     });
     setCotizando(false);
     if (r.ok) setResultado(r.data);
@@ -185,6 +191,15 @@ export default function Cotizador() {
               ayuda={servicio === 'ida_vuelta' ? 'Si regresas el mismo día, déjala vacía' : undefined}
             />
           ) : null}
+          <SelectorOpciones
+            etiqueta="Jornada por día"
+            opciones={OPCIONES_JORNADA}
+            valor={String(jornada)}
+            onCambio={cambiar((v: string) => setJornada(Number(v) as Jornada))}
+          />
+          <Text style={styles.ayuda}>
+            Horas diarias con vehículo y conductor. A todo costo: incluye combustible y peajes.
+          </Text>
           <CampoTexto
             etiqueta="Número de pasajeros"
             keyboardType="number-pad"
@@ -205,7 +220,10 @@ export default function Cotizador() {
 }
 
 function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol }) {
+  const { usuario } = useAuth();
   const [solicitando, setSolicitando] = useState(false);
+  const [errorAsesor, setErrorAsesor] = useState<string | null>(null);
+  const compartible = desdeRespuesta(c, destinatarioDesdePerfil(usuario?.perfil));
   const vehiculo = ETIQUETA_TIPO[c.vehiculo.tipo as TipoVehiculo] ?? c.vehiculo.tipo;
   const fechas = c.fecha_fin === c.fecha_inicio ? c.fecha_inicio : `${c.fecha_inicio} al ${c.fecha_fin}`;
 
@@ -218,6 +236,9 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
         </Text>
         <Text style={styles.datoCabecera}>
           {ETIQUETA_SERVICIO[c.tipo_servicio]} · {fechas} · {formatearDecimal(c.distancia_km)} km
+        </Text>
+        <Text style={styles.datoCabecera}>
+          Jornada {c.jornada_horas} horas · {c.km_incluidos_dia} km diarios incluidos
         </Text>
       </View>
 
@@ -240,7 +261,17 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
         sujeto a disponibilidad; un asesor lo confirma al formalizar la solicitud.
       </Text>
 
-      <AccionesCompartir cotizacion={desdeRespuesta(c)} />
+      <AccionesCompartir cotizacion={compartible} />
+      <Boton
+        titulo="Hablar con un asesor"
+        variante="texto"
+        icono="logo-whatsapp"
+        onPress={async () => {
+          const r = await hablarConAsesor(compartible);
+          setErrorAsesor(r.ok ? null : r.error);
+        }}
+      />
+      <Mensaje texto={errorAsesor} />
 
       {rol === 'visitante' ? (
         <>
@@ -262,7 +293,8 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
             onCerrar={() => setSolicitando(false)}
             onCreada={() => {
               setSolicitando(false);
-              router.push('/mis-solicitudes');
+              // Cierra el cotizador: la solicitud se sigue desde las pestañas del cliente.
+              router.dismissTo('/mis-solicitudes');
             }}
           />
         </>
@@ -274,6 +306,7 @@ function Resultado({ cotizacion: c, rol }: { cotizacion: Cotizacion; rol: Rol })
 const styles = StyleSheet.create({
   espacio: { marginVertical: Spacing.lg },
   error: { color: Colors.danger, fontSize: 13, marginTop: -Spacing.sm, marginBottom: Spacing.md },
+  ayuda: { fontSize: 13, color: Colors.muted, marginTop: -Spacing.sm, marginBottom: Spacing.md },
   resultado: {
     marginTop: Spacing.lg,
     padding: Spacing.md,

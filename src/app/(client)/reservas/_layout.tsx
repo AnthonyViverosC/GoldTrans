@@ -1,15 +1,21 @@
 import { Stack } from 'expo-router';
 
-import { Logo } from '@/components/logo';
 import { MenuCuenta } from '@/components/menu-cuenta';
-import { opcionesEncabezado } from '@/components/navegacion';
+import { LogoEncabezado, opcionesPila } from '@/components/navegacion';
+
+// Con un enlace directo al detalle, la lista queda debajo y la flecha regresa a ella.
+export const unstable_settings = { initialRouteName: 'index' };
 
 export default function ReservasLayout() {
   return (
-    <Stack screenOptions={opcionesEncabezado}>
+    <Stack screenOptions={opcionesPila}>
       <Stack.Screen
         name="index"
-        options={{ title: 'Reservas', headerLeft: () => <Logo tamano={30} />, headerRight: () => <MenuCuenta /> }}
+        options={{
+          title: 'Reservas',
+          headerLeft: () => <LogoEncabezado margen={false} />,
+          headerRight: () => <MenuCuenta />,
+        }}
       />
       <Stack.Screen name="nueva" options={{ title: 'Reservar' }} />
       <Stack.Screen name="[id]" options={{ title: 'Reserva' }} />

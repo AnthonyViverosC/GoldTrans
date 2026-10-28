@@ -10,13 +10,14 @@ import { cerrarSesion } from '@/lib/auth';
 export function MenuCuenta() {
   return (
     <View style={styles.fila}>
-      <Accion icono="person-circle-outline" texto="Perfil" onPress={() => router.push('/perfil')} />
-      <Accion icono="log-out-outline" texto="Salir" onPress={cerrarSesion} />
+      <AccionEncabezado icono="person-circle-outline" texto="Perfil" onPress={() => router.push('/perfil')} />
+      <AccionEncabezado icono="log-out-outline" texto="Salir" onPress={cerrarSesion} />
     </View>
   );
 }
 
-function Accion({ icono, texto, onPress }: { icono: NombreIcono; texto: string; onPress: () => void }) {
+/** Botón de ícono con etiqueta pequeña para el encabezado. */
+export function AccionEncabezado({ icono, texto, onPress }: { icono: NombreIcono; texto: string; onPress: () => void }) {
   return (
     <Pressable
       accessibilityRole="button"

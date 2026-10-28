@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { opcionesEncabezado } from '@/components/navegacion';
+import { opcionesPila } from '@/components/navegacion';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 
 export default function RootLayout() {
@@ -20,7 +20,7 @@ function RootNavigator() {
   const { session, rol } = useAuth();
 
   return (
-    <Stack screenOptions={{ ...opcionesEncabezado, headerShown: false }}>
+    <Stack screenOptions={(p) => ({ ...opcionesPila(p), headerShown: false })}>
       <Stack.Screen name="index" />
 
       {/* Visitante */}

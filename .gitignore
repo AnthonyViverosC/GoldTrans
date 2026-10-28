@@ -49,3 +49,10 @@ example
 
 # coverage
 coverage/
+
+# docs
+
+docs/Ejemplos
+
+# Datos de ejemplo creados (incluye cuentas de prueba)
+scripts/.datos-ejemplo.json

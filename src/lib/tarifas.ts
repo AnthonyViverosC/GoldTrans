@@ -1,5 +1,8 @@
-// HU-10 · Administrar tarifas por tipo de vehículo y vigencia.
+// HU-10 · Administrar tarifas por tipo de vehículo, jornada y vigencia, como en las cotizaciones
+// oficiales: valor por jornada (4, 8 o 12 horas) con km incluidos por día y valor del km adicional.
+// Una tarifa con ruta es un precio especial que prevalece sobre la general en esa ruta.
 import { traducirError, type Resultado } from '@/lib/auth';
+import { JORNADAS, type Jornada } from '@/lib/cotizador';
 import { supabase } from '@/lib/supabase';
 import {
   normalizarPesos,
@@ -16,35 +19,45 @@ export type Tarifa = Tables<'tarifas'>;
 
 export type FormularioTarifa = {
   tipoVehiculo: TipoVehiculo;
-  tarifaBase: string;
-  valorKm: string;
-  valorDia: string;
+  jornada: Jornada;
+  valorJornada: string;
+  kmIncluidos: string;
+  valorKmAdicional: string;
   recargoFinSemana: string;
+  /** Vacío = tarifa general (todas las rutas). */
+  rutaId: string;
   vigenciaDesde: string;
   /** Vacío = sin fecha de fin. */
   vigenciaHasta: string;
 };
 
+// Valores de las cotizaciones oficiales: 150 km diarios y $1.500 por km adicional.
 export const TARIFA_VACIA: FormularioTarifa = {
-  tipoVehiculo: 'van',
-  tarifaBase: '',
-  valorKm: '',
-  valorDia: '',
+  tipoVehiculo: 'camioneta',
+  jornada: 12,
+  valorJornada: '',
+  kmIncluidos: '150',
+  valorKmAdicional: '1500',
   recargoFinSemana: '0',
+  rutaId: '',
   vigenciaDesde: '',
   vigenciaHasta: '',
 };
 
 export const MENSAJE_SUPERPOSICION =
-  'Ya hay una tarifa de ese tipo de vehículo con vigencia en esas fechas';
+  'Ya hay una tarifa de ese vehículo y jornada, para la misma ruta, con vigencia en esas fechas';
+
+export const ETIQUETA_JORNADA: Record<Jornada, string> = { 4: '4 horas', 8: '8 horas', 12: '12 horas' };
 
 export function tarifaAFormulario(t: Tarifa): FormularioTarifa {
   return {
     tipoVehiculo: t.tipo_vehiculo as TipoVehiculo,
-    tarifaBase: String(t.tarifa_base),
-    valorKm: String(t.valor_km),
-    valorDia: String(t.valor_dia),
+    jornada: (JORNADAS as readonly number[]).includes(t.jornada_horas) ? (t.jornada_horas as Jornada) : 12,
+    valorJornada: String(t.valor_jornada),
+    kmIncluidos: String(t.km_incluidos_dia),
+    valorKmAdicional: String(t.valor_km_adicional),
     recargoFinSemana: String(t.recargo_fin_semana_pct),
+    rutaId: t.ruta_id ?? '',
     vigenciaDesde: t.vigencia_desde,
     vigenciaHasta: t.vigencia_hasta ?? '',
   };
@@ -67,9 +80,10 @@ export function validarTarifa(
   id?: string,
 ): Errores<keyof FormularioTarifa> {
   const errores: Errores<keyof FormularioTarifa> = {
-    tarifaBase: validarPesos(f.tarifaBase),
-    valorKm: validarPesos(f.valorKm),
-    valorDia: validarPesos(f.valorDia),
+    valorJornada:
+      requerido(f.valorJornada, 'Indica el valor de la jornada') ?? validarPesos(f.valorJornada),
+    kmIncluidos: validarEntero(f.kmIncluidos, 0, 2000, 'Entre 0 y 2.000 km por día'),
+    valorKmAdicional: validarPesos(f.valorKmAdicional),
     recargoFinSemana: validarEntero(f.recargoFinSemana, 0, 100, 'Porcentaje entre 0 y 100'),
     vigenciaDesde: requerido(f.vigenciaDesde, 'Indica desde cuándo rige') ?? validarFecha(f.vigenciaDesde),
     vigenciaHasta: validarFecha(f.vigenciaHasta),
@@ -85,6 +99,8 @@ export function validarTarifa(
         (t) =>
           t.id !== id &&
           t.tipo_vehiculo === f.tipoVehiculo &&
+          t.jornada_horas === f.jornada &&
+          (t.ruta_id ?? '') === f.rutaId &&
           vigenciasSeSuperponen({ desde, hasta }, { desde: t.vigencia_desde, hasta: t.vigencia_hasta }),
       );
       if (choca) errores.vigenciaDesde = MENSAJE_SUPERPOSICION;
@@ -100,10 +116,12 @@ export function validarTarifa(
 export function formularioATarifa(f: FormularioTarifa): TablesInsert<'tarifas'> {
   return {
     tipo_vehiculo: f.tipoVehiculo,
-    tarifa_base: Number(normalizarPesos(f.tarifaBase)),
-    valor_km: Number(normalizarPesos(f.valorKm)),
-    valor_dia: Number(normalizarPesos(f.valorDia)),
+    jornada_horas: f.jornada,
+    valor_jornada: Number(normalizarPesos(f.valorJornada)),
+    km_incluidos_dia: Number(f.kmIncluidos),
+    valor_km_adicional: Number(normalizarPesos(f.valorKmAdicional)),
     recargo_fin_semana_pct: Number(f.recargoFinSemana),
+    ruta_id: f.rutaId || null,
     vigencia_desde: f.vigenciaDesde.trim(),
     vigencia_hasta: f.vigenciaHasta.trim() || null,
   };
@@ -128,6 +146,7 @@ export async function listarTarifas(): Promise<Resultado<Tarifa[]>> {
     .from('tarifas')
     .select('*')
     .order('tipo_vehiculo')
+    .order('jornada_horas')
     .order('vigencia_desde', { ascending: false });
   if (error) return { ok: false, error: traducirError(error) };
   return { ok: true, data };

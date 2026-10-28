@@ -13,12 +13,14 @@ import type { Tables, TablesInsert } from '@/types/database';
 
 export type Vehiculo = Tables<'vehiculos'>;
 
-export const TIPOS_VEHICULO = ['automovil', 'camioneta', 'van', 'microbus', 'buseta', 'bus'] as const;
+export const TIPOS_VEHICULO = ['automovil', 'campero', 'camioneta', 'van', 'microbus', 'buseta', 'bus'] as const;
 export type TipoVehiculo = (typeof TIPOS_VEHICULO)[number];
 
 export const ETIQUETA_TIPO: Record<TipoVehiculo, string> = {
   automovil: 'Automóvil',
-  camioneta: 'Camioneta',
+  campero: 'Campero',
+  // Así se ofrece en las cotizaciones oficiales (con platón para herramientas livianas).
+  camioneta: 'Camioneta 4x4 doble cabina',
   van: 'Van',
   microbus: 'Microbús',
   buseta: 'Buseta',
