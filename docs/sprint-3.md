@@ -11,7 +11,7 @@
 | HU-19 Ficha del paquete | `(public)/paquete/[id].tsx`: galería, precio, fechas con cupos, itinerario, incluye / no incluye |
 | HU-20 Fechas de salida con cupos | tabla `fechas_salida` · editor en `(admin)/paquetes/[id].tsx` |
 | HU-21 Crear y actualizar paquetes | `(admin)/paquetes/` · fotos en el bucket público `paquetes` (`expo-image-picker`) |
-| RNF-05 Android e iOS | `npx expo export --platform android --platform ios` compila. **Falta probar en un dispositivo Android real y en el simulador de iOS** (ver abajo) |
+| Compatibilidad Android e iOS (no es RNF-05 en Jira; apoya RNF-01 y el despliegue) | `npx expo export --platform android --platform ios` compila. **Falta probar en un dispositivo Android real y en el simulador de iOS** (ver abajo) |
 
 > El catálogo está en `(public)` y no en `(client)`, como proponía la estructura inicial, porque los visitantes
 > también pueden verlo (matriz de permisos de `docs/arquitectura.md`).
@@ -61,7 +61,7 @@ Dependencias nuevas: `expo-print`, `expo-sharing` y `expo-image-picker`. `app.js
 para iOS. Como son módulos nativos, **hay que volver a generar el build de desarrollo** (`npx expo run:android` /
 `run:ios`). Expo Go ya los trae.
 
-## RNF-05 · Lista de verificación en dispositivos
+## Compatibilidad · Lista de verificación en dispositivos
 
 Probar en **Android real** y **simulador iOS**:
 

@@ -2,6 +2,7 @@
 // HU-01 registro · HU-02 inicio de sesión · HU-07 recuperar contraseña con código por correo.
 import type { AuthError, Session } from '@supabase/supabase-js';
 
+import { VERSION_AVISO_PRIVACIDAD } from '@/constants/privacidad';
 import { esRolAsignable, type RolAsignable } from '@/lib/roles';
 import { supabase } from '@/lib/supabase';
 import { normalizarNit, normalizarTelefono, type DatosRegistro } from '@/lib/validacion';
@@ -62,6 +63,9 @@ export async function registrar(
         nit: esEmpresa ? normalizarNit(datos.nit) : null,
         telefono: normalizarTelefono(datos.telefono) || null,
         ciudad: datos.ciudad.trim() || null,
+        // RNF-03 · Sin estos dos campos el trigger rechaza el registro (Ley 1581 de 2012).
+        autoriza_datos: datos.autorizaDatos,
+        version_aviso_privacidad: VERSION_AVISO_PRIVACIDAD,
       },
     },
   });

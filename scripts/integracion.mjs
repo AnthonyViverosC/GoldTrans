@@ -86,6 +86,8 @@ async function crearUsuario(rol) {
         tipo_documento: 'CC',
         numero_documento: `9${Date.now() % 1_000_000_000}`,
         telefono: '3100000000',
+        autoriza_datos: true,
+        version_aviso_privacidad: 'integracion',
       },
     }),
     `crear ${rol}`,

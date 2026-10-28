@@ -92,6 +92,8 @@ export type DatosRegistro = DatosPerfil & {
   email: string;
   password: string;
   confirmacion: string;
+  /** RNF-03 · Autorización de tratamiento de datos (Ley 1581 de 2012); la casilla empieza sin marcar. */
+  autorizaDatos: boolean;
 };
 
 export function validarPerfil(d: DatosPerfil): Errores<keyof DatosPerfil> {
@@ -117,6 +119,9 @@ export function validarRegistro(d: DatosRegistro): Errores<keyof DatosRegistro> 
     email: validarEmail(d.email),
     password: validarPassword(d.password),
     confirmacion: validarConfirmacion(d.password, d.confirmacion),
+    autorizaDatos: d.autorizaDatos
+      ? undefined
+      : 'Debes autorizar el tratamiento de tus datos personales para crear la cuenta',
   });
 }
 

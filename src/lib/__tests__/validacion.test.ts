@@ -24,6 +24,7 @@ const persona: DatosRegistro = {
   email: 'ana@correo.co',
   password: 'clave1234',
   confirmacion: 'clave1234',
+  autorizaDatos: true,
 };
 
 const empresa: DatosRegistro = {
@@ -110,6 +111,14 @@ describe('validarRegistro (HU-01)', () => {
   it('exige teléfono válido', () => {
     expect(validarRegistro({ ...persona, telefono: '' }).telefono).toBeDefined();
     expect(validarRegistro({ ...persona, telefono: '12ab' }).telefono).toBeDefined();
+  });
+
+  it('exige la autorización de tratamiento de datos (RNF-03, Ley 1581)', () => {
+    const errores = validarRegistro({ ...persona, autorizaDatos: false });
+    expect(errores.autorizaDatos).toBe(
+      'Debes autorizar el tratamiento de tus datos personales para crear la cuenta',
+    );
+    expect(sinErrores(errores)).toBe(false);
   });
 });
 

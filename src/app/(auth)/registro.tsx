@@ -1,12 +1,16 @@
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import * as Linking from 'expo-linking';
 import { useState } from 'react';
+import { StyleSheet } from 'react-native';
 
 import { Boton } from '@/components/boton';
 import { CampoTexto } from '@/components/campo-texto';
+import { Casilla } from '@/components/casilla';
 import { CamposPerfil } from '@/components/campos-perfil';
 import { Mensaje } from '@/components/mensaje';
 import { PantallaFormulario } from '@/components/pantalla-formulario';
+import { TEXTO_AUTORIZACION } from '@/constants/privacidad';
+import { Colors } from '@/constants/theme';
 import { registrar } from '@/lib/auth';
 import { sinErrores, validarRegistro, type DatosRegistro, type Errores } from '@/lib/validacion';
 
@@ -22,6 +26,7 @@ const INICIAL: DatosRegistro = {
   email: '',
   password: '',
   confirmacion: '',
+  autorizaDatos: false,
 };
 
 // HU-01 · Registrar usuario como persona natural o empresa con NIT.
@@ -104,8 +109,23 @@ export default function Registro() {
         error={errores.confirmacion}
       />
 
+      {/* RNF-03 · Autorización expresa (Ley 1581 de 2012): sin marcar no se puede registrar. */}
+      <Casilla
+        marcada={datos.autorizaDatos}
+        onCambio={(v) => cambiar('autorizaDatos', v)}
+        texto={TEXTO_AUTORIZACION}
+        error={errores.autorizaDatos}>
+        <Link href="/privacidad" style={styles.enlace}>
+          Leer el aviso de privacidad
+        </Link>
+      </Casilla>
+
       <Mensaje texto={error} />
       <Boton titulo="Registrarme" onPress={enviar} cargando={enviando} />
     </PantallaFormulario>
   );
 }
+
+const styles = StyleSheet.create({
+  enlace: { color: Colors.primary, fontWeight: '600', fontSize: 14 },
+});

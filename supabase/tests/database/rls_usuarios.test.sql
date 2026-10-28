@@ -7,11 +7,11 @@ select plan(20);
 -- Usuarios de prueba: el trigger on_auth_user_created crea usuarios + perfiles.
 insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-00000000000c', 'cliente@test.co',
-   '{"tipo_persona":"persona","nombre_completo":"Ana Cliente","tipo_documento":"CC","numero_documento":"1012345678"}'),
+   '{"autoriza_datos":true,"version_aviso_privacidad":"test","tipo_persona":"persona","nombre_completo":"Ana Cliente","tipo_documento":"CC","numero_documento":"1012345678"}'),
   ('00000000-0000-0000-0000-00000000000e', 'empresa@test.co',
-   '{"tipo_persona":"empresa","nombre_completo":"Luis Empresa","razon_social":"Transportes Sur SAS","nit":"900123456-8","rol":"admin"}'),
-  ('00000000-0000-0000-0000-00000000000a', 'asesor@test.co', '{"nombre_completo":"Asesor"}'),
-  ('00000000-0000-0000-0000-0000000000ad', 'admin@test.co', '{"nombre_completo":"Admin"}');
+   '{"autoriza_datos":true,"version_aviso_privacidad":"test","tipo_persona":"empresa","nombre_completo":"Luis Empresa","razon_social":"Transportes Sur SAS","nit":"900123456-8","rol":"admin"}'),
+  ('00000000-0000-0000-0000-00000000000a', 'asesor@test.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Asesor"}'),
+  ('00000000-0000-0000-0000-0000000000ad', 'admin@test.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Admin"}');
 
 update public.usuarios set rol = 'asesor' where email = 'asesor@test.co';
 update public.usuarios set rol = 'admin' where email = 'admin@test.co';
@@ -25,7 +25,7 @@ select is((select nit from public.perfiles where usuario_id = '00000000-0000-000
   '900123456-8', 'la empresa queda registrada con su NIT');
 select throws_ok(
   $$insert into auth.users (id, email, raw_user_meta_data) values
-    ('00000000-0000-0000-0000-0000000000ff', 'malo@test.co', '{"tipo_persona":"empresa","nombre_completo":"X"}')$$,
+    ('00000000-0000-0000-0000-0000000000ff', 'malo@test.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","tipo_persona":"empresa","nombre_completo":"X"}')$$,
   '23514', null, 'una empresa sin NIT no puede registrarse');
 
 -- Visitante (anon)

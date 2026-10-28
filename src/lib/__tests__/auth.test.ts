@@ -9,6 +9,7 @@ import {
   verificarCodigoRecuperacion,
 } from '../auth';
 import type { DatosRegistro } from '../validacion';
+import { VERSION_AVISO_PRIVACIDAD } from '@/constants/privacidad';
 
 const mockAuth = {
   signUp: jest.fn(),
@@ -45,6 +46,7 @@ const empresa: DatosRegistro = {
   email: ' Luis@Empresa.CO ',
   password: 'clave1234',
   confirmacion: 'clave1234',
+  autorizaDatos: true,
 };
 
 beforeEach(() => jest.clearAllMocks());
@@ -73,6 +75,8 @@ describe('registrar (HU-01)', () => {
           nit: '900123456-8',
           telefono: '3001234567',
           ciudad: null,
+          autoriza_datos: true,
+          version_aviso_privacidad: VERSION_AVISO_PRIVACIDAD,
         },
       },
     });

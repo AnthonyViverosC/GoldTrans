@@ -57,6 +57,8 @@ export type Database = {
           nit: string | null;
           telefono: string | null;
           ciudad: string | null;
+          autoriza_datos_at: string | null;
+          version_aviso_privacidad: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -70,6 +72,8 @@ export type Database = {
           nit?: string | null;
           telefono?: string | null;
           ciudad?: string | null;
+          autoriza_datos_at?: string | null;
+          version_aviso_privacidad?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -83,6 +87,8 @@ export type Database = {
           nit?: string | null;
           telefono?: string | null;
           ciudad?: string | null;
+          autoriza_datos_at?: string | null;
+          version_aviso_privacidad?: string | null;
           created_at?: string;
           updated_at?: string;
         };
