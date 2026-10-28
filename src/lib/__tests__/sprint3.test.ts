@@ -89,6 +89,8 @@ describe('compartir cotización (HU-15)', () => {
         nit: '900162246-4',
         telefono: null,
         ciudad: 'Villagarzón',
+        autoriza_datos_at: null,
+        version_aviso_privacidad: null,
         created_at: '',
         updated_at: '',
       }),

@@ -10,7 +10,7 @@
 | HU-25 Saldo y fecha límite | `resumenPagos()`, `fechaLimitePago()` y `saldoVencido()` en `src/lib/reservas.ts` · columna generada `saldo` · aviso de *pago atrasado* en la bandeja |
 | HU-26 Estados y cupos vencidos | Edge Function `supabase/functions/liberar-cupos/` → `vencer_prerreservas()` · programada con `pg_cron` cada 15 min · `cancelar_reserva()` |
 | HU-27 Documentos por categoría | `components/repositorio-documentos.tsx` en `(advisor)/documentos/` y `(admin)/documentos/` · tablas `categorias_doc`, `documentos`, `versiones_doc` · bucket privado `documentos` |
-| RNF-06 Almacenamiento seguro | Buckets privados con URLs firmadas de 5 minutos, carpetas por dueño, límites de tamaño y tipo, archivos inmutables (ver abajo) |
+| Almacenamiento seguro de archivos (no es RNF-06 en Jira; apoya RNF-02) | Buckets privados con URLs firmadas de 5 minutos, carpetas por dueño, límites de tamaño y tipo, archivos inmutables (ver abajo) |
 
 > **Pestañas del admin:** con Reservas y Documentos serían 8 pestañas, y no caben en un teléfono. Solicitudes y Reservas
 > quedan juntas en **Ventas** (`(admin)/ventas.tsx`, con un selector arriba) y Documentos aparece como **Docs**.
@@ -51,7 +51,7 @@ stateDiagram-v2
 - El pago es **por transferencia** (no hay pasarela). La cuenta que ve el cliente sale de `EXPO_PUBLIC_DATOS_TRANSFERENCIA`.
   Si está vacía, la app le pide pedirla a un asesor.
 
-## RNF-06 · Almacenamiento seguro
+## Almacenamiento seguro de archivos (apoya RNF-02)
 
 | Bucket | Público | Máximo | Tipos | Ruta | Quién escribe | Quién lee |
 |---|:-:|---|---|---|---|---|

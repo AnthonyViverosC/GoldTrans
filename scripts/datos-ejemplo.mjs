@@ -111,7 +111,13 @@ async function crearUsuario(rol, perfil) {
       email,
       password,
       email_confirm: true,
-      user_metadata: { telefono: '3200000000', ciudad: 'La Hormiga', ...perfil.metadata },
+      user_metadata: {
+        telefono: '3200000000',
+        ciudad: 'La Hormiga',
+        autoriza_datos: true,
+        version_aviso_privacidad: 'datos-ejemplo',
+        ...perfil.metadata,
+      },
     }),
     `crear ${email}`,
   );

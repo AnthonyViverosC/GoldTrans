@@ -8,6 +8,7 @@ export default function PublicLayout() {
       <Stack.Screen name="cotizador" options={{ title: 'Cotizador' }} />
       <Stack.Screen name="goldtours" options={{ title: 'Goldtours' }} />
       <Stack.Screen name="paquete/[id]" options={{ title: 'Paquete' }} />
+      <Stack.Screen name="privacidad" options={{ title: 'Privacidad' }} />
     </Stack>
   );
 }

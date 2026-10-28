@@ -12,9 +12,19 @@
 | HU-06 Flota | `src/app/(admin)/flota.tsx` · tabla `vehiculos` |
 | HU-07 Recuperar contraseña | `(auth)/recuperar.tsx` envía un **código** al correo → `restablecer.tsx` lo verifica (`verifyOtp`) y guarda la nueva clave. Sin enlaces: funciona igual en Expo Go, web y la app instalada |
 | HU-08 Gestión de usuarios | `src/app/(admin)/usuarios.tsx` · activar / desactivar / cambiar rol |
-| RNF-01 JWT | Supabase Auth; la app solo usa la anon key + JWT del usuario |
-| RNF-02 RLS | `supabase/migrations/20261008000000_usuarios_roles.sql` · pruebas en `supabase/tests/database/rls_usuarios.test.sql` |
-| RNF-03 Pruebas unitarias | `src/lib/__tests__/` (auth, roles, validación) |
+| RNF-01 Usabilidad y diseño responsivo móvil | Formularios en `PantallaFormulario` (ancho máximo 480, scroll y teclado) · *pendiente de verificar en Jira: cotizar en máximo 4 pasos y prueba en celulares de distintos tamaños* |
+| RNF-02 Seguridad en acceso y manejo de información | Contraseñas cifradas por Supabase Auth, todo por HTTPS, sesión JWT y acceso por rol en pantallas (`Stack.Protected`) y datos (RLS) · `supabase/migrations/20261008000000_usuarios_roles.sql` · pruebas en `supabase/tests/database/rls_usuarios.test.sql` |
+| RNF-03 Tratamiento de datos (Ley 1581 de 2012) | Aviso de privacidad en `src/app/(public)/privacidad.tsx` (texto en `src/constants/privacidad.ts`) · casilla de autorización obligatoria en el registro · el trigger `handle_new_user` rechaza registros sin autorización y guarda la prueba (`perfiles.autoriza_datos_at`, `version_aviso_privacidad`) · migración `20261030000000_autorizacion_datos.sql` · pruebas en `supabase/tests/database/privacidad.test.sql` |
+| Pruebas unitarias (base de RNF-07) | `src/lib/__tests__/` (auth, roles, validación) |
+
+> Los nombres de los requisitos siguen el backlog de Jira (proyecto SCRUM): las historias **HU-XX** del código son las **RF-XX** de Jira con el mismo número.
+
+### RNF-03 · Antes de producción
+
+- GOLDTRANS debe revisar el texto del aviso y confirmar el correo de contacto (`CORREO_PRIVACIDAD` en `src/constants/privacidad.ts`, hoy es un valor provisional).
+- Si el aviso cambia, subir `VERSION_AVISO_PRIVACIDAD`: cada perfil guarda la versión que aceptó.
+- Las cuentas creadas antes de la migración quedan con `autoriza_datos_at` vacío.
+- Las cuentas ya no se pueden crear desde **Authentication → Add user** del panel de Supabase sin la metadata de autorización: el personal se registra desde la app y luego el admin le cambia el rol.
 
 ## Reglas de seguridad
 

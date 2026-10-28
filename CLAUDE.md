@@ -8,6 +8,13 @@ Aplicación móvil para GOLDTRANS S.A.S., empresa de transporte terrestre especi
 
 ---
 
+## Fuente de verdad: Jira
+
+> El backlog de Jira (proyecto **SCRUM**, vicman0025.atlassian.net) manda sobre este archivo. Antes de dar por cumplido un ítem, verificar su descripción en Jira.
+> Las historias **HU-XX** del código y los documentos son las **RF-XX** de Jira con el mismo número (SCRUM-NN).
+
+---
+
 ## Regla de avance entre sprints
 
 > **No pasar al siguiente sprint sin autorización explícita.**  
@@ -64,9 +71,9 @@ Antes de avanzar al Sprint 1, confirmar que:
 - [ ] SCRUM-24 · **HU-08** Gestionar usuarios: activar, desactivar, cambiar rol (5 pts · Medium)
 
 ### Tareas técnicas
-- [ ] SCRUM-25 · **RNF-01** Autenticación JWT con Supabase Auth (5 pts · Highest)
-- [ ] SCRUM-26 · **RNF-02** Políticas Row Level Security por rol (5 pts · Highest)
-- [ ] SCRUM-27 · **RNF-03** Pruebas unitarias del módulo de autenticación (3 pts · Medium)
+- [ ] SCRUM-25 · **RNF-01** Usabilidad y diseño responsivo móvil: pantallas correctas en celulares de distintos tamaños, cotizar en máximo 4 pasos, registro sin capacitación (5 pts)
+- [ ] SCRUM-26 · **RNF-02** Seguridad en acceso y manejo de información: contraseñas cifradas, HTTPS y acceso por rol en todas las pantallas (5 pts)
+- [ ] SCRUM-27 · **RNF-03** Tratamiento de datos según la Ley 1581 de 2012: aviso de privacidad visible y autorización expresa del titular al registrarse (3 pts)
 
 ### Tablas de base de datos
 ```sql
@@ -100,7 +107,7 @@ usuarios, roles, perfiles, vehiculos
 - [ ] SCRUM-33 · **HU-14** Ver desglose de la cotización (3 pts · Medium)
 
 ### Tareas técnicas
-- [ ] SCRUM-34 · **RNF-04** Tiempo de respuesta del cotizador < 5 segundos (8 pts · High)
+- [ ] SCRUM-34 · **RNF-04** Rendimiento eficiente: pantallas principales cargan en < 3 s y el cálculo responde en < 5 s con conexión móvil estándar (5 pts)
 
 ### Edge Function a implementar
 ```
@@ -140,7 +147,7 @@ rutas, tarifas, cotizaciones, detalle_cotizacion
 - [ ] SCRUM-41 · **HU-21** Crear y actualizar paquetes turísticos (5 pts · High)
 
 ### Tareas técnicas
-- [ ] SCRUM-42 · **RNF-05** Compatibilidad verificada en Android e iOS (5 pts · High)
+- [ ] SCRUM-42 · **RNF-05** Trazabilidad de cambios de estado: todo cambio de estado en solicitudes, reservas y documentos guarda fecha, hora y usuario, consultable desde el panel (5 pts)
 
 ### Tablas de base de datos
 ```sql
@@ -173,7 +180,7 @@ solicitudes, paquetes, imagenes_paquete, fechas_salida, itinerario_paquete
 - [ ] SCRUM-48 · **HU-27** Cargar y categorizar documentos de la empresa (8 pts · High)
 
 ### Tareas técnicas
-- [ ] SCRUM-49 · **RNF-06** Almacenamiento seguro de archivos en Supabase Storage (8 pts · High)
+- [ ] SCRUM-49 · **RNF-06** Tolerancia a baja conectividad: avisa la pérdida de conexión, reintenta y no duplica solicitudes ni reservas al reconectar (8 pts)
 
 ### Edge Function a implementar
 ```
@@ -217,7 +224,7 @@ reservas, viajeros, abonos, documentos, categorias_doc, versiones_doc
 - [ ] SCRUM-55 · **HU-33** Descargar paquete de documentos de un proceso (8 pts · High)
 
 ### Tareas técnicas
-- [ ] SCRUM-56 · **RNF-07** Pruebas de integración y regresión completas (5 pts · Highest)
+- [ ] SCRUM-56 · **RNF-07** Pruebas de los flujos críticos: login y roles, cálculo de tarifas y reserva completa con abono y verificación (8 pts)
 - [ ] SCRUM-57 · Despliegue en producción: Vercel + Supabase (8 pts · High)
 
 ### Edge Function a implementar

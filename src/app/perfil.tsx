@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -8,6 +9,7 @@ import { PantallaFormulario } from '@/components/pantalla-formulario';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAuth } from '@/hooks/use-auth';
 import { cerrarSesion } from '@/lib/auth';
+import { fechaHoraColombia } from '@/lib/reservas';
 import { ETIQUETA_ROL } from '@/lib/roles';
 import { actualizarPerfil, perfilAFormulario } from '@/lib/usuarios';
 import { sinErrores, validarPerfil, type DatosPerfil, type Errores } from '@/lib/validacion';
@@ -58,6 +60,18 @@ export default function Perfil() {
       <Mensaje texto={error} />
       <Mensaje tipo="exito" texto={exito} />
       <Boton titulo="Guardar cambios" onPress={guardar} cargando={guardando} />
+
+      {/* RNF-03 · Prueba de la autorización visible para el titular (Ley 1581 de 2012). */}
+      <View style={styles.privacidad}>
+        <Text style={styles.privacidadTexto}>
+          {usuario.perfil?.autoriza_datos_at
+            ? `Autorizaste el tratamiento de tus datos el ${fechaHoraColombia(usuario.perfil.autoriza_datos_at)} (aviso versión ${usuario.perfil.version_aviso_privacidad}).`
+            : 'Tu cuenta se creó antes del aviso de privacidad actual.'}
+        </Text>
+        <Link href="/privacidad" style={styles.enlace}>
+          Ver aviso de privacidad
+        </Link>
+      </View>
       <View style={styles.espacio} />
       <Boton titulo="Cerrar sesión" variante="peligro" onPress={cerrarSesion} />
     </PantallaFormulario>
@@ -74,4 +88,7 @@ const styles = StyleSheet.create({
   email: { fontSize: 16, fontWeight: '600', color: Colors.text },
   rol: { fontSize: 14, color: Colors.primaryDark, marginTop: Spacing.xs },
   espacio: { height: Spacing.md },
+  privacidad: { marginTop: Spacing.lg },
+  privacidadTexto: { fontSize: 13, lineHeight: 19, color: Colors.muted },
+  enlace: { color: Colors.primary, fontWeight: '600', fontSize: 14, marginTop: Spacing.xs },
 });

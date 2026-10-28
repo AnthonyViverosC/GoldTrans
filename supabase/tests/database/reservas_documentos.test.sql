@@ -5,10 +5,10 @@ create extension if not exists pgtap with schema extensions;
 select plan(60);
 
 insert into auth.users (id, email, raw_user_meta_data) values
-  ('00000000-0000-0000-0000-0000000004c1', 'cliente1@s4.co', '{"nombre_completo":"Cliente Uno"}'),
-  ('00000000-0000-0000-0000-0000000004c2', 'cliente2@s4.co', '{"nombre_completo":"Cliente Dos"}'),
-  ('00000000-0000-0000-0000-0000000004a5', 'asesor@s4.co', '{"nombre_completo":"Asesor"}'),
-  ('00000000-0000-0000-0000-0000000004ad', 'admin@s4.co', '{"nombre_completo":"Admin"}');
+  ('00000000-0000-0000-0000-0000000004c1', 'cliente1@s4.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Cliente Uno"}'),
+  ('00000000-0000-0000-0000-0000000004c2', 'cliente2@s4.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Cliente Dos"}'),
+  ('00000000-0000-0000-0000-0000000004a5', 'asesor@s4.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Asesor"}'),
+  ('00000000-0000-0000-0000-0000000004ad', 'admin@s4.co', '{"autoriza_datos":true,"version_aviso_privacidad":"test","nombre_completo":"Admin"}');
 update public.usuarios set rol = 'asesor' where email = 'asesor@s4.co';
 update public.usuarios set rol = 'admin' where email = 'admin@s4.co';
 
