@@ -1,0 +1,342 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1010" viewBox="0 0 1560 1010" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<title>Modelo entidad-relación GOLDTRANS</title>
+<defs>
+  <marker id="many" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M12,0 L0,6 L12,12 M0,6 L12,6" fill="none" stroke="#444" stroke-width="1.3"/></marker>
+  <marker id="one" viewBox="0 0 12 12" refX="12" refY="6" markerWidth="12" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M4,0 V12 M8,0 V12" fill="none" stroke="#444" stroke-width="1.3"/></marker>
+  <marker id="zone" viewBox="0 0 16 12" refX="16" refY="6" markerWidth="16" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse">
+    <circle cx="5" cy="6" r="3.5" fill="#fff" stroke="#444" stroke-width="1.3"/><path d="M12,0 V12" stroke="#444" stroke-width="1.3"/></marker>
+  <marker id="start" viewBox="0 0 12 12" refX="0" refY="6" markerWidth="12" markerHeight="12" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M5,0 V12 M9,0 V12" fill="none" stroke="#444" stroke-width="1.3"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="20" y="20" width="750" height="360" rx="10" fill="#FBF5E6" stroke="#A8780A" stroke-opacity="0.35"/>
+<text x="36" y="46" font-size="15" font-weight="700" fill="#A8780A">1 · Usuarios y flota</text>
+<rect x="790" y="20" width="750" height="360" rx="10" fill="#EAF1FA" stroke="#1F5FA8" stroke-opacity="0.35"/>
+<text x="806" y="46" font-size="15" font-weight="700" fill="#1F5FA8">2 · Cotizador y solicitudes</text>
+<rect x="20" y="400" width="750" height="500" rx="10" fill="#EAF5EE" stroke="#2E7D4F" stroke-opacity="0.35"/>
+<text x="36" y="426" font-size="15" font-weight="700" fill="#2E7D4F">3 · Goldtours y reservas</text>
+<rect x="790" y="400" width="750" height="500" rx="10" fill="#F2ECF8" stroke="#6B3FA0" stroke-opacity="0.35"/>
+<text x="806" y="426" font-size="15" font-weight="700" fill="#6B3FA0">4 · Documentos y licitaciones</text>
+<path d="M260,106 H290" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#one)"/>
+<path d="M260,206 H275 V124 H290" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M510,106 H540" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#one)"/>
+<path d="M920,174 V220" fill="none" stroke="#444" stroke-width="1.4" stroke-dasharray="5 4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1030,106 H1040 V160 H1060" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1030,256 H1050 V178 H1060" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1280,106 H1295 V124 H1310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1280,196 H1295 V282 H1310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#zone)"/>
+<path d="M290,486 H300 V504 H310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M180,554 V600" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M70,504 H50 V784 H70" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M420,554 V600" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M530,636 H537.5 V654 H545" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M530,708 H537.5 V784 H545" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1030,486 H1045 V504 H1060" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1280,486 H1295 V504 H1310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1280,522 H1300 V646 H1310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#zone)"/>
+<path d="M1280,540 H1288 V794 H1310" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1170,572 V680" fill="none" stroke="#444" stroke-width="1.4" stroke-dasharray="5 4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M1030,636 H1045 V734 H1060" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<path d="M920,722 V770" fill="none" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/>
+<g>
+<rect x="40" y="70" width="220" height="50" rx="6" fill="#fff" stroke="#A8780A" stroke-width="1.5"/>
+<path d="M40,96 V76 a6,6 0 0 1 6,-6 H254 a6,6 0 0 1 6,6 V96 Z" fill="#A8780A"/>
+<text x="50" y="88" font-size="13" font-weight="700" fill="#fff">auth.users</text>
+<text x="50" y="109" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="252" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+</g>
+<g>
+<rect x="40" y="170" width="220" height="68" rx="6" fill="#fff" stroke="#A8780A" stroke-width="1.5"/>
+<path d="M40,196 V176 a6,6 0 0 1 6,-6 H254 a6,6 0 0 1 6,6 V196 Z" fill="#A8780A"/>
+<text x="50" y="188" font-size="13" font-weight="700" fill="#fff">roles</text>
+<text x="50" y="209" font-size="12" fill="#222" font-weight="700">codigo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="252" y="209" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="50" y="227" font-size="12" fill="#222">nombre <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="290" y="70" width="220" height="104" rx="6" fill="#fff" stroke="#A8780A" stroke-width="1.5"/>
+<path d="M290,96 V76 a6,6 0 0 1 6,-6 H504 a6,6 0 0 1 6,6 V96 Z" fill="#A8780A"/>
+<text x="300" y="88" font-size="13" font-weight="700" fill="#fff">usuarios</text>
+<text x="300" y="109" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="502" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK FK</text>
+<text x="300" y="127" font-size="12" fill="#222">rol <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="502" y="127" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="300" y="145" font-size="12" fill="#222">email <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="300" y="163" font-size="12" fill="#222">activo <tspan fill="#999" font-size="10.5">boolean</tspan></text>
+</g>
+<g>
+<rect x="540" y="70" width="220" height="86" rx="6" fill="#fff" stroke="#A8780A" stroke-width="1.5"/>
+<path d="M540,96 V76 a6,6 0 0 1 6,-6 H754 a6,6 0 0 1 6,6 V96 Z" fill="#A8780A"/>
+<text x="550" y="88" font-size="13" font-weight="700" fill="#fff">perfiles</text>
+<text x="550" y="109" font-size="12" fill="#222" font-weight="700">usuario_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="752" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK FK</text>
+<text x="550" y="127" font-size="12" fill="#222">tipo_persona <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="550" y="145" font-size="12" fill="#222">nit <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="752" y="145" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+</g>
+<g>
+<rect x="290" y="230" width="220" height="104" rx="6" fill="#fff" stroke="#A8780A" stroke-width="1.5"/>
+<path d="M290,256 V236 a6,6 0 0 1 6,-6 H504 a6,6 0 0 1 6,6 V256 Z" fill="#A8780A"/>
+<text x="300" y="248" font-size="13" font-weight="700" fill="#fff">vehiculos</text>
+<text x="300" y="269" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="502" y="269" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="300" y="287" font-size="12" fill="#222">placa <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="502" y="287" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="300" y="305" font-size="12" fill="#222">tipo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="300" y="323" font-size="12" fill="#222">estado <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="810" y="70" width="220" height="104" rx="6" fill="#fff" stroke="#1F5FA8" stroke-width="1.5"/>
+<path d="M810,96 V76 a6,6 0 0 1 6,-6 H1024 a6,6 0 0 1 6,6 V96 Z" fill="#1F5FA8"/>
+<text x="820" y="88" font-size="13" font-weight="700" fill="#fff">rutas</text>
+<text x="820" y="109" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="820" y="127" font-size="12" fill="#222">origen <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1022" y="127" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK*</text>
+<text x="820" y="145" font-size="12" fill="#222">destino <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1022" y="145" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK*</text>
+<text x="820" y="163" font-size="12" fill="#222">distancia_km <tspan fill="#999" font-size="10.5">numeric</tspan></text>
+</g>
+<g>
+<rect x="810" y="220" width="220" height="122" rx="6" fill="#fff" stroke="#1F5FA8" stroke-width="1.5"/>
+<path d="M810,246 V226 a6,6 0 0 1 6,-6 H1024 a6,6 0 0 1 6,6 V246 Z" fill="#1F5FA8"/>
+<text x="820" y="238" font-size="13" font-weight="700" fill="#fff">tarifas</text>
+<text x="820" y="259" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="259" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="820" y="277" font-size="12" fill="#222">ruta_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="277" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="820" y="295" font-size="12" fill="#222">tipo_vehiculo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="820" y="313" font-size="12" fill="#222">jornada_horas <tspan fill="#999" font-size="10.5">smallint</tspan></text>
+<text x="820" y="331" font-size="12" fill="#222">valor_jornada <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="1060" y="70" width="220" height="140" rx="6" fill="#fff" stroke="#1F5FA8" stroke-width="1.5"/>
+<path d="M1060,96 V76 a6,6 0 0 1 6,-6 H1274 a6,6 0 0 1 6,6 V96 Z" fill="#1F5FA8"/>
+<text x="1070" y="88" font-size="13" font-weight="700" fill="#fff">cotizaciones</text>
+<text x="1070" y="109" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1070" y="127" font-size="12" fill="#222">codigo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1272" y="127" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="1070" y="145" font-size="12" fill="#8a8a8a">usuario_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="145" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="1070" y="163" font-size="12" fill="#222">ruta_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="163" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1070" y="181" font-size="12" fill="#222">tarifa_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="181" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1070" y="199" font-size="12" fill="#222">valor_total <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="1310" y="70" width="220" height="104" rx="6" fill="#fff" stroke="#1F5FA8" stroke-width="1.5"/>
+<path d="M1310,96 V76 a6,6 0 0 1 6,-6 H1524 a6,6 0 0 1 6,6 V96 Z" fill="#1F5FA8"/>
+<text x="1320" y="88" font-size="13" font-weight="700" fill="#fff">detalle_cotizacion</text>
+<text x="1320" y="109" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="109" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1320" y="127" font-size="12" fill="#222">cotizacion_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="127" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1320" y="145" font-size="12" fill="#222">concepto <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1320" y="163" font-size="12" fill="#222">subtotal <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="1310" y="210" width="220" height="140" rx="6" fill="#fff" stroke="#1F5FA8" stroke-width="1.5"/>
+<path d="M1310,236 V216 a6,6 0 0 1 6,-6 H1524 a6,6 0 0 1 6,6 V236 Z" fill="#1F5FA8"/>
+<text x="1320" y="228" font-size="13" font-weight="700" fill="#fff">solicitudes</text>
+<text x="1320" y="249" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="249" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1320" y="267" font-size="12" fill="#222">codigo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1522" y="267" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="1320" y="285" font-size="12" fill="#222">cotizacion_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="285" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK UK</text>
+<text x="1320" y="303" font-size="12" fill="#8a8a8a">usuario_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="303" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="1320" y="321" font-size="12" fill="#8a8a8a">asesor_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="321" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="1320" y="339" font-size="12" fill="#222">estado <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="70" y="450" width="220" height="104" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M70,476 V456 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V476 Z" fill="#2E7D4F"/>
+<text x="80" y="468" font-size="13" font-weight="700" fill="#fff">paquetes</text>
+<text x="80" y="489" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="282" y="489" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="80" y="507" font-size="12" fill="#222">nombre <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="80" y="525" font-size="12" fill="#222">precio_por_persona <tspan fill="#999" font-size="10.5">integer</tspan></text>
+<text x="80" y="543" font-size="12" fill="#222">activo <tspan fill="#999" font-size="10.5">boolean</tspan></text>
+</g>
+<g>
+<rect x="70" y="600" width="220" height="86" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M70,626 V606 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V626 Z" fill="#2E7D4F"/>
+<text x="80" y="618" font-size="13" font-weight="700" fill="#fff">imagenes_paquete</text>
+<text x="80" y="639" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="282" y="639" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="80" y="657" font-size="12" fill="#222">paquete_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="282" y="657" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="80" y="675" font-size="12" fill="#222">ruta <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="282" y="675" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+</g>
+<g>
+<rect x="70" y="730" width="220" height="86" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M70,756 V736 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V756 Z" fill="#2E7D4F"/>
+<text x="80" y="748" font-size="13" font-weight="700" fill="#fff">itinerario_paquete</text>
+<text x="80" y="769" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="282" y="769" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="80" y="787" font-size="12" fill="#222">paquete_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="282" y="787" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="80" y="805" font-size="12" fill="#222">dia <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="310" y="450" width="220" height="104" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M310,476 V456 a6,6 0 0 1 6,-6 H524 a6,6 0 0 1 6,6 V476 Z" fill="#2E7D4F"/>
+<text x="320" y="468" font-size="13" font-weight="700" fill="#fff">fechas_salida</text>
+<text x="320" y="489" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="522" y="489" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="320" y="507" font-size="12" fill="#222">paquete_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="522" y="507" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="320" y="525" font-size="12" fill="#222">fecha_salida <tspan fill="#999" font-size="10.5">date</tspan></text>
+<text x="320" y="543" font-size="12" fill="#222">cupos_disponibles <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="310" y="600" width="220" height="140" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M310,626 V606 a6,6 0 0 1 6,-6 H524 a6,6 0 0 1 6,6 V626 Z" fill="#2E7D4F"/>
+<text x="320" y="618" font-size="13" font-weight="700" fill="#fff">reservas</text>
+<text x="320" y="639" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="522" y="639" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="320" y="657" font-size="12" fill="#222">codigo <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="522" y="657" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="320" y="675" font-size="12" fill="#8a8a8a">usuario_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="522" y="675" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="320" y="693" font-size="12" fill="#222">fecha_salida_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="522" y="693" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="320" y="711" font-size="12" fill="#222">estado <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="320" y="729" font-size="12" fill="#222">saldo <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="545" y="600" width="220" height="86" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M545,626 V606 a6,6 0 0 1 6,-6 H759 a6,6 0 0 1 6,6 V626 Z" fill="#2E7D4F"/>
+<text x="555" y="618" font-size="13" font-weight="700" fill="#fff">viajeros</text>
+<text x="555" y="639" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="757" y="639" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="555" y="657" font-size="12" fill="#222">reserva_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="757" y="657" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="555" y="675" font-size="12" fill="#222">numero_documento <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="545" y="730" width="220" height="122" rx="6" fill="#fff" stroke="#2E7D4F" stroke-width="1.5"/>
+<path d="M545,756 V736 a6,6 0 0 1 6,-6 H759 a6,6 0 0 1 6,6 V756 Z" fill="#2E7D4F"/>
+<text x="555" y="748" font-size="13" font-weight="700" fill="#fff">abonos</text>
+<text x="555" y="769" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="757" y="769" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="555" y="787" font-size="12" fill="#222">reserva_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="757" y="787" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="555" y="805" font-size="12" fill="#8a8a8a">asesor_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="757" y="805" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="555" y="823" font-size="12" fill="#222">comprobante_ruta <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="757" y="823" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="555" y="841" font-size="12" fill="#222">estado <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="810" y="450" width="220" height="68" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M810,476 V456 a6,6 0 0 1 6,-6 H1024 a6,6 0 0 1 6,6 V476 Z" fill="#6B3FA0"/>
+<text x="820" y="468" font-size="13" font-weight="700" fill="#fff">categorias_doc</text>
+<text x="820" y="489" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="489" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="820" y="507" font-size="12" fill="#222">nombre <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1022" y="507" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+</g>
+<g>
+<rect x="1060" y="450" width="220" height="122" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M1060,476 V456 a6,6 0 0 1 6,-6 H1274 a6,6 0 0 1 6,6 V476 Z" fill="#6B3FA0"/>
+<text x="1070" y="468" font-size="13" font-weight="700" fill="#fff">documentos</text>
+<text x="1070" y="489" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="489" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1070" y="507" font-size="12" fill="#222">categoria_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="507" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1070" y="525" font-size="12" fill="#222">nombre <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1070" y="543" font-size="12" fill="#222">version_actual <tspan fill="#999" font-size="10.5">integer</tspan></text>
+<text x="1070" y="561" font-size="12" fill="#8a8a8a">creado_por <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="561" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+</g>
+<g>
+<rect x="1310" y="450" width="220" height="122" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M1310,476 V456 a6,6 0 0 1 6,-6 H1524 a6,6 0 0 1 6,6 V476 Z" fill="#6B3FA0"/>
+<text x="1320" y="468" font-size="13" font-weight="700" fill="#fff">versiones_doc</text>
+<text x="1320" y="489" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="489" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1320" y="507" font-size="12" fill="#222">documento_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="507" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1320" y="525" font-size="12" fill="#222">version <tspan fill="#999" font-size="10.5">integer</tspan></text>
+<text x="1320" y="543" font-size="12" fill="#222">ruta <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1522" y="543" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK</text>
+<text x="1320" y="561" font-size="12" fill="#8a8a8a">subido_por <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="561" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+</g>
+<g>
+<rect x="1310" y="610" width="220" height="86" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M1310,636 V616 a6,6 0 0 1 6,-6 H1524 a6,6 0 0 1 6,6 V636 Z" fill="#6B3FA0"/>
+<text x="1320" y="628" font-size="13" font-weight="700" fill="#fff">vigencias</text>
+<text x="1320" y="649" font-size="12" fill="#222" font-weight="700">documento_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="649" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK FK</text>
+<text x="1320" y="667" font-size="12" fill="#222">fecha_vencimiento <tspan fill="#999" font-size="10.5">date</tspan></text>
+<text x="1320" y="685" font-size="12" fill="#8a8a8a">responsable_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="685" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+</g>
+<g>
+<rect x="1310" y="740" width="220" height="104" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M1310,766 V746 a6,6 0 0 1 6,-6 H1524 a6,6 0 0 1 6,6 V766 Z" fill="#6B3FA0"/>
+<text x="1320" y="758" font-size="13" font-weight="700" fill="#fff">alertas</text>
+<text x="1320" y="779" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="779" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1320" y="797" font-size="12" fill="#222">documento_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="797" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1320" y="815" font-size="12" fill="#8a8a8a">responsable_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1522" y="815" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="1320" y="833" font-size="12" fill="#222">umbral <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g>
+<rect x="810" y="600" width="220" height="122" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M810,626 V606 a6,6 0 0 1 6,-6 H1024 a6,6 0 0 1 6,6 V626 Z" fill="#6B3FA0"/>
+<text x="820" y="618" font-size="13" font-weight="700" fill="#fff">procesos_licitacion</text>
+<text x="820" y="639" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="639" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="820" y="657" font-size="12" fill="#222">numero <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1022" y="657" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK*</text>
+<text x="820" y="675" font-size="12" fill="#222">entidad <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="1022" y="675" font-size="10" text-anchor="end" fill="#666" font-weight="600">UK*</text>
+<text x="820" y="693" font-size="12" fill="#222">estado <tspan fill="#999" font-size="10.5">text</tspan></text>
+<text x="820" y="711" font-size="12" fill="#8a8a8a">responsable_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="711" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+</g>
+<g>
+<rect x="1060" y="680" width="220" height="104" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M1060,706 V686 a6,6 0 0 1 6,-6 H1274 a6,6 0 0 1 6,6 V706 Z" fill="#6B3FA0"/>
+<text x="1070" y="698" font-size="13" font-weight="700" fill="#fff">items_verificacion</text>
+<text x="1070" y="719" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="719" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="1070" y="737" font-size="12" fill="#222">proceso_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="737" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1070" y="755" font-size="12" fill="#222">documento_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1272" y="755" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="1070" y="773" font-size="12" fill="#222">requisito <tspan fill="#999" font-size="10.5">text</tspan></text>
+</g>
+<g>
+<rect x="810" y="770" width="220" height="104" rx="6" fill="#fff" stroke="#6B3FA0" stroke-width="1.5"/>
+<path d="M810,796 V776 a6,6 0 0 1 6,-6 H1024 a6,6 0 0 1 6,6 V796 Z" fill="#6B3FA0"/>
+<text x="820" y="788" font-size="13" font-weight="700" fill="#fff">bitacora_descargas</text>
+<text x="820" y="809" font-size="12" fill="#222" font-weight="700">id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="809" font-size="10" text-anchor="end" fill="#666" font-weight="600">PK</text>
+<text x="820" y="827" font-size="12" fill="#222">proceso_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="827" font-size="10" text-anchor="end" fill="#666" font-weight="600">FK</text>
+<text x="820" y="845" font-size="12" fill="#8a8a8a">usuario_id <tspan fill="#999" font-size="10.5">uuid</tspan></text>
+<text x="1022" y="845" font-size="10" text-anchor="end" fill="#A8780A" font-weight="600">→ usuarios</text>
+<text x="820" y="863" font-size="12" fill="#222">vencidos <tspan fill="#999" font-size="10.5">integer</tspan></text>
+</g>
+<g font-size="12" fill="#333">
+<text x="30" y="925" font-size="13" font-weight="700">Leyenda</text>
+<path d="M30,947 H90" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#many)"/><text x="100" y="951">uno a muchos</text>
+<path d="M210,947 H270" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#one)"/><text x="280" y="951">uno a uno</text>
+<path d="M370,947 H430" stroke="#444" stroke-width="1.4" marker-start="url(#start)" marker-end="url(#zone)"/><text x="440" y="951">uno a cero o uno</text>
+<path d="M570,947 H630" stroke="#444" stroke-width="1.4" stroke-dasharray="5 4" marker-start="url(#start)" marker-end="url(#many)"/><text x="640" y="951">FK opcional (admite null)</text>
+<text x="30" y="979">PK clave primaria · FK clave foránea · UK único · UK* único compuesto · <tspan fill="#A8780A" font-weight="600">→ usuarios</tspan> FK hacia usuarios (línea omitida para legibilidad) · vehiculos se relaciona con tarifas y cotizaciones por el tipo de vehículo, sin FK</text>
+</g>
+</svg>
